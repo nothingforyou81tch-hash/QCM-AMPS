@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Sécurité Privée - 50 Questions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col items-center p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl bg-indigo-900 text-white rounded-2xl p-6 shadow-lg mb-6 text-center relative overflow-hidden">
+        <h1 class="text-2xl md:text-3xl font-bold mb-2">Grand QCM : Sécurité Privée & Gardiennage</h1>
+        <p class="text-indigo-200 text-sm md:text-base">Basé sur la loi du 2 octobre 2017 - 50 Questions d'entraînement</p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8 relative">
+        
+        <!-- Controls Bar -->
+        <div class="flex flex-wrap items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-4">
+            <div class="flex items-center space-x-2">
+                <span class="text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-wider">Progression :</span>
+                <span id="progress-text" class="text-sm md:text-base font-bold text-indigo-600">Question 1 / 50</span>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="text-xs md:text-sm font-semibold text-slate-600">
+                    Score : <span id="score-text" class="text-emerald-600 font-bold">0</span> / <span id="answered-text">0</span>
+                </div>
+                <button id="reset-btn" onclick="resetQuiz()" class="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Recommencer & Mélanger
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-100 rounded-full h-2.5 mb-6 overflow-hidden">
+            <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 2%"></div>
+        </div>
+
+        <!-- Question View -->
+        <div id="quiz-box">
+            <div class="flex justify-between items-start mb-4">
+                <div id="question-text" class="text-lg md:text-xl font-semibold text-slate-900 leading-snug">
+                    <!-- Question loaded dynamically -->
+                </div>
+                <button id="hint-btn" onclick="toggleHint()" class="ml-4 shrink-0 flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-colors">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h-0a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    Indice
+                </button>
+            </div>
+
+            <!-- Hint Display Box -->
+            <div id="hint-box" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-xl mb-6 text-xs md:text-sm text-amber-900 flex items-start gap-2">
+                <span class="font-bold text-amber-700 shrink-0">💡 Indice :</span>
+                <span id="hint-text"></span>
+            </div>
+
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Options loaded dynamically -->
+            </div>
+
+            <!-- Feedback Message -->
+            <div id="feedback" class="hidden p-4 rounded-xl mb-6 text-sm md:text-base font-medium"></div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                <button id="prev-btn" onclick="prevQuestion()" disabled class="px-4 py-2 bg-slate-100 text-slate-400 font-medium rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 transition-colors">
+                    Précédent
+                </button>
+                <button id="next-btn" onclick="nextQuestion()" disabled class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors">
+                    Suivant
+                </button>
+            </div>
+        </div>
+
+        <!-- Completion Screen (hidden by default) -->
+        <div id="result-box" class="hidden text-center py-8">
+            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">QCM Terminé !</h2>
+            <p class="text-slate-600 mb-6">Voici votre résultat final :</p>
+            <div class="text-4xl font-extrabold text-indigo-600 mb-6" id="final-score">0 / 50</div>
+            <p id="performance-comment" class="text-sm md:text-base text-slate-700 mb-8 max-w-md mx-auto"></p>
+            <button onclick="resetQuiz()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Recommencer avec de nouvelles questions mélangées
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        const rawQuestions = [
+            // Cadre légal et généralités
+            { q: "Quelle loi régit la sécurité privée et particulière en Belgique ?", hint: "Il s'agit d'une loi promulguée à l'automne 2017.", options: ["La loi du 2 octobre 2017", "La loi du 10 avril 1990", "La loi du 15 décembre 2005", "La loi du 1er juin 2020"], correct: 0, explanation: "Le document mentionne explicitement la loi du 2 octobre 2017 réglementant la sécurité privée et particulière." },
+            { q: "Qu'a apporté la loi du 2 octobre 2017 concernant les compétences des agents ?", hint: "Elle n'a pas restreint leurs possibilités d'action.", options: ["Une restriction importante de leurs actions", "Un élargissement de leur champ de compétences", "Le transfert de toutes les missions de police", "L'obligation d'avoir un diplôme universitaire"], correct: 1, explanation: "La loi a élargi le champ de compétences des agents de gardiennage." },
+            { q: "Certaines compétences nouvelles des agents découlent de quel phénomène ?", hint: "Pensez au transfert de tâches du secteur public vers le privé.", options: ["De la privatisation totale des forces de l'ordre", "De l'externalisation de tâches des services de police", "De la suppression du réseau Sécurail", "De la fusion avec la douane"], correct: 1, explanation: "Elles découlent de l'externalisation de certaines tâches des services de police." },
+            { q: "Que requiert l'externalisation de certaines tâches de police vers la sécurité privée ?", hint: "Il s'agit de la mise en commun des forces.", options: ["Une opposition stricte entre les acteurs", "Des synergies entre les acteurs de la sécurité", "Une interdiction totale de communication", "L'armement obligatoire de tous les agents"], correct: 1, explanation: "Le texte indique que cela appelle à des synergies entre les acteurs de la sécurité." },
+            { q: "Le gardiennage concerne toute forme de surveillance et de protection de quoi ?", hint: "Il s'agit d'un binôme matériel et humain.", options: ["Uniquement de bâtiments publics", "Uniquement des personnes VIP", "De biens et de personnes", "Des frontières nationales uniquement"], correct: 2, explanation: "Cela concerne toute forme de surveillance et de protection de biens et de personnes." },
+
+            // Domaines et formes d'organisation
+            { q: "En combien de domaines d'activités le secteur du gardiennage se subdivise-t-il au total ?", hint: "C'est un nombre supérieur à 10.", options: ["5 domaines", "8 domaines", "10 domaines", "13 domaines"], correct: 3, explanation: "Le secteur du gardiennage se subdivise en 13 domaines d'activités." },
+            { q: "Sous combien de formes le secteur du gardiennage est-il organisé ?", hint: "C'est un chiffre pair inférieur à 5.", options: ["2 formes", "4 formes", "6 formes", "12 formes"], correct: 1, explanation: "Le gardiennage est organisé sous 4 formes." },
+            { q: "Laquelle des propositions suivantes fait partie des 4 formes d'organisation du gardiennage ?", hint: "Pensez aux actions non rémunérées assurées lors d'événements.", options: ["Le bénévolat", "L'association sans but lucratif militaire", "La brigade canine indépendante", "La milice citoyenne"], correct: 0, explanation: "Les 4 formes sont : entreprise de gardiennage, service interne, bénévolat, et employés de concessions publiques." },
+            { q: "Laquelle des formes suivantes N'EST PAS une forme d'organisation du secteur citée dans le texte ?", hint: "Cherchez l'élément à vocation touristique/locale.", options: ["Entreprise de gardiennage", "Service interne de gardiennage", "Syndicat d'initiative", "Employés de concessions publiques"], correct: 2, explanation: "Le syndicat d'initiative n’est pas une forme d'organisation du gardiennage." },
+
+            // Domaines d'activités décrits sous forme fonctionnelle
+            { q: "Comment qualifie-t-on la mission de surveillance et de protection de biens immobiliers sans déplacement de l'agent sur un périmètre étendu ?", hint: "L'agent reste fixe sur un lieu déterminé.", options: ["Gardiennage mobile", "Gardiennage statique", "Sweeping", "Inspection magasin"], correct: 1, explanation: "La surveillance fixe de biens mobiliers ou immobiliers entre dans le gardiennage statique." },
+            { q: "Un agent effectuant une patrouille en véhicule et devant intervenir rapidement après le déclenchement d'une alarme réalise :", hint: "L'agent est en mouvement dans une zone géographique.", options: ["Du gardiennage statique", "Du gardiennage mobile", "Du sweeping", "Un contrôle de concession publique"], correct: 1, explanation: "Le gardiennage mobile comprend la patrouille et l'intervention après alarme." },
+            { q: "La surveillance et la protection spécialisées lors du déplacement de sommes d'argent ou d'objets précieux relèvent de :", hint: "Cela nécessite souvent des véhicules blindés.", options: ["La protection rapprochée", "Du transport de valeurs", "De l'accompagnement routier", "Du contrôle de sortie"], correct: 1, explanation: "Il s'agit du domaine du transport de valeurs." },
+            { q: "La réception, l'analyse et le traitement à distance des signaux d'alerte provenant de sites surveillés sont pris en charge par :", hint: "Il s'agit d'une infrastructure dédiée à distance.", options: ["Le sweeping", "La gestion de centraux d'alarme", "La télésurveillance événementielle", "Le gardiennage statique"], correct: 1, explanation: "La gestion de centraux d'alarme est une activité spécifique du gardiennage." },
+            { q: "Assurer la sécurité physique individuelle et constante d'une personnalité ou d'un VIP correspond à :", hint: "C'est une mission centrée sur un individu précis.", options: ["La protection rapprochée de personnes", "L'inspection magasin", "Le gardiennage en milieu de sortie", "L'accompagnement routier"], correct: 0, explanation: "Il s'agit de la protection rapprochée de personnes." },
+            { q: "Un agent opérant en civil dans un commerce pour prévenir et détecter le vol à l'étalage effectue une mission de :", hint: "Cette mission cible les clients fraudeurs dans un commerce.", options: ["Gardiennage d'événements", "Mission inspecteur-magasin", "Gardiennage milieu de sortie", "Sweeping"], correct: 1, explanation: "C'est la surveillance et le contrôle de personnes dans le cadre de la mission inspecteur-magasin." },
+            { q: "La gestion des flux de visiteurs et du contrôle d'accès lors d'un festival, d'une foire ou d'un match de football relève du :", hint: "Concerne les rassemblements publics temporaires.", options: ["Gardiennage milieu de sortie", "Gardiennage d'événements", "Service de concession publique", "Transport de valeurs"], correct: 1, explanation: "Il s'agit du gardiennage d'événements." },
+            { q: "La surveillance et la régulation du public à l'entrée et aux abords des discothèques ou cafés dansants correspondent au :", hint: "C'est la fonction spécifique de portier nocturne.", options: ["Gardiennage d'événements", "Gardiennage milieu de sortie", "Sweeping", "Gardiennage mobile"], correct: 1, explanation: "C'est la surveillance et le contrôle de personnes en milieu de sortie." },
+            { q: "L'inspection minutieuse d'un site ou d'une salle à la recherche d'équipements d'écoute ou d'objets suspects avant une réunion sensible est appelée :", hint: "Ce terme anglophone désigne un nettoyage / balayage de sécurité.", options: ["Sweeping", "Télésurveillance", "Constatation d'infraction", "Inspection magasin"], correct: 0, explanation: "La recherche de micros/objets dangereux sur un site est le Sweeping." },
+            { q: "La constatation d'infractions sur des biens situés sur le domaine public par des agents privés nécessite au préalable :", hint: "Une autorisation officielle est indispensable.", options: ["Uniquement l'accord du propriétaire voisin", "Un ordre de l'autorité compétente ou du titulaire d'une concession publique", "La présence permanente d'un policier", "Une déclaration dans un journal local"], correct: 1, explanation: "Elle se fait sur ordre de l'autorité compétente ou du titulaire d'une concession publique." },
+            { q: "L'activité visant à faciliter la traversée ou le déplacement sécurisé de groupes de piétons sur la voie publique est :", hint: "L'objectif principal est la prévention des accidents de la circulation.", options: ["L'accompagnement de groupes en vue de la sécurité routière", "Le gardiennage mobile", "La protection rapprochée", "Le gardiennage événementiel"], correct: 0, explanation: "Il s'agit de l'accompagnement de groupes de personnes en vue de la sécurité routière." },
+            { q: "Le télépilotage ou l'exploitation de moyens techniques volants autonomes à des fins de surveillance correspond à :", hint: "Dispositif technologique moderne d'observation aérienne.", options: ["La télésurveillance classique", "La commande de moyens de sécurité techniques (drones)", "Le sweeping électronique", "La centrale d'alarme mobile"], correct: 1, explanation: "C'est la commande de moyens de sécurité techniques (drones)." },
+            { q: "Toute activité de contrôle de personnes qui ne relève ni des magasins, ni des événements, ni des milieux de sortie est classée comme :", hint: "C'est la catégorie subsidiaire/générale pour le contrôle des individus.", options: ["Activité de contrôle de personnes autre (catégorie complémentaire)", "Gardiennage statique d'urgence", "Service interne de police", "Protection rapprochée collective"], correct: 0, explanation: "Il s'agit des activités de contrôle de personnes autres que les activités 6, 7 et 8." },
+
+            // Contexte de travail & Prérequis
+            { q: "Quel type d'horaire caractérise généralement le travail d'un agent de gardiennage ?", hint: "L'agent peut travailler à toute heure et pas forcément en continu.", options: ["Un horaire fixe de bureau de 9h à 17h", "Un horaire de jour ou de nuit, variable avec ou sans coupure", "Uniquement des prestations le week-end", "Des horaires obligatoirement de 12h d'affilée"], correct: 1, explanation: "Le travail se fait selon un horaire de jour ou de nuit, variable avec ou sans coupure." },
+            { q: "Au niveau géographique, où un agent peut-il être amené à se déplacer dans le cadre de ses fonctions ?", hint: "Les déplacements ne se limitent pas à la Belgique.", options: ["Uniquement dans sa commune de résidence", "À l'intérieur du pays ou à l'étranger", "Uniquement dans les installations ferroviaires", "Dans l'Union Européenne uniquement"], correct: 1, explanation: "La situation de travail implique un déplacement à l'intérieur du pays ou à l'étranger." },
+            { q: "Parmi les compétences administratives de base, que doit savoir faire un agent ?", hint: "Cela concerne la communication écrite de faits précis.", options: ["Savoir rédiger de courts rapports précis et concis", "Rédiger des articles de presse", "Parler au moins 4 langues étrangères", "Établir des bilans comptables"], correct: 0, explanation: "La rédaction de courts rapports précis et concis est un prérequis cité." },
+            { q: "Quel comportement physique peut être exigé d'un agent pendant de longues périodes selon la mission ?", hint: "Pensez aux gardes statiques ou au travail sur écran.", options: ["Sauter et courir en continu", "Rester en station debout ou assise de longue durée", "Porter des charges de plus de 50kg à la main", "Nager en eau profonde"], correct: 1, explanation: "Le document mentionne la station debout ou assise de longue durée." },
+            { q: "Quel prérequis technique est lié à la surveillance d'images ou au travail de contrôle ?", hint: "C'est lié à la vidéosurveillance ou aux centrales d'alarme.", options: ["Travailler sur un écran pendant de longues périodes", "Interdiction de regarder un écran pendant le service", "Savoir fabriquer un moniteur vidéo", "Programmer des logiciels complexes"], correct: 0, explanation: "Travailler sur un écran pendant de longues périodes est un prérequis spécifique." },
+
+            // Outils de travail
+            { q: "Lequel des éléments suivants N'EST PAS cité comme outil de travail dans le document ?", hint: "Il s'agit d'un matériel militaire offensif.", options: ["Les véhicules blindés", "Les appareils de pesage d'argent", "Les drones de combat armés", "Les centrales électroniques"], correct: 2, explanation: "Les drones armés ne font pas partie des outils du document." },
+            { q: "Quel type d'équipement spécifique au traitement de l'argent est mentionné dans les outils ?", hint: "Il s'agit d'appareils de traitement fiduciaire.", options: ["Sacs étanches uniquement", "Appareils de comptage, de tri ou de pesage d'argent", "Valises explosives automatiques", "Compteurs Geiger"], correct: 1, explanation: "Le document cite les appareils de comptage, de tri ou de pesage d'argent." },
+            { q: "Quels moyens de communication sans fil sont cités parmi les outils de travail de l'agent ?", hint: "Ce sont les deux moyens les plus répandus sur le terrain.", options: ["Téléphone portable ou radios", "Uniquement le télégraphe", "Pigeons voyageurs", "Mégaphones à pile uniquement"], correct: 0, explanation: "Téléphone portable et radios sont cités comme outils de travail." },
+
+            // Impact psychologique & Risques
+            { q: "Parmi ces éléments, lequel génère un impact psychologique important sur la perception de l'agent ?", hint: "Ce qu'il porte sur lui au niveau vestimentaire ou sécuritaire.", options: ["Le port d'une tenue de travail ou d'un gilet pare-balles", "La signature du contrat de travail", "Le choix de la marque de ses chaussures", "Le calcul des heures supplémentaires"], correct: 0, explanation: "Le port d'une tenue ou d'un gilet pare-balles fait partie des facteurs d'impact psychologique." },
+            { q: "Quelle limitation légale lors d'un contrôle génère un impact psychologique chez l'agent ?", hint: "Cela concerne la vérification des affaires personnelles des clients.", options: ["Compétence limitée du contrôle des vêtements et des bagages à main", "Interdiction de parler au public", "L'obligation d'être toujours accompagné de la police", "L'interdiction de conduire un véhicule"], correct: 0, explanation: "Le texte cite la 'compétence limitée du contrôle des vêtements et des bagages à main'." },
+            { q: "Quel risque professionnel grave peut survenir chez l'agent après un événement traumatisant ?", hint: "Il touche la santé mentale à long terme.", options: ["Traumatisme psychologique suite à un incident avec séquelles", "Augmentation automatique de salaire", "Perte systématique du permis de conduire", "Changement obligatoire d'employeur"], correct: 0, explanation: "Le document mentionne le traumatisme psychologique suite à un incident avec séquelles." },
+            { q: "Parmi les réactions physiologiques au stress ou aux gardes de nuit citées, on trouve :", hint: "Elles touchent le sommeil et les émotions.", options: ["L'insomnie, la somnolence et l'énervement", "La baisse instantanée de la vue", "La croissance musculaire", "L'amnésie totale"], correct: 0, explanation: "Tension nerveuse, stress, insomnie, somnolence, énervement sont cités." },
+
+            // Profil psychologique
+            { q: "Selon le profil psychologique idéal, comment l'agent doit-il gérer la possession d'une arme, d'un chien ou d'un uniforme ?", hint: "L'autorité conférée par le statut ne doit pas dériver.", options: ["En l'exprimant avec fermeté pour intimider le public", "En sachant résister au sentiment de pouvoir pouvant survenir", "En l'utilisant pour imposer sa volonté personnelle", "En exigeant des avantages auprès de sa hiérarchie"], correct: 1, explanation: "L'agent doit savoir résister au sentiment de pouvoir suscité par l'uniforme, l'arme ou le chien." },
+            { q: "Concernant la diversité et les relations humaines, quelle attitude caractérise le profil idéal ?", hint: "C'est l'absence de préjugés et le respect d'autrui.", options: ["Ne pas être étiqueté comme raciste et respecter son prochain", "Préférer une catégorie de population", "Ignorer les personnes étrangères", "Refuser de parler aux jeunes"], correct: 0, explanation: "Le document précise : respecter son prochain et ne pas être étiqueté comme raciste." },
+            { q: "Quelle aptitude sensorielle et d'analyse rapide est exigée chez l'agent ?", hint: "Elle combine la vue et l'ouïe sur le terrain.", options: ["Avoir une vue télescopique", "Savoir observer et constater rapidement des éléments visuels et auditifs", "Avoir une ouïe à ultrasons", "Savoir deviner les intentions par la pensée"], correct: 1, explanation: "Savoir observer et constater rapidement des éléments visuels et auditifs est requis." },
+            { q: "Sur un site qu'il connaît très bien, que doit être capable de déceler un agent vigilant ?", hint: "Détecter ce qui sort du cadre habituel.", options: ["Remarquer rapidement des anomalies dans des situations familières", "Changer la disposition des meubles sans autorisation", "Ignorer les petits détails sans importance", "Remplacer les systèmes d'alarme défaillants"], correct: 0, explanation: "Le profil idéal exige la capacité à remarquer rapidement des anomalies dans des situations familières." },
+            { q: "Quelle capacité psychologique est nécessaire lors de gardes isolées ?", hint: "Certaines gardes se font seul dans le silence.", options: ["Refuser systématiquement le travail isolé", "Savoir résister à la solitude", "Demander toujours la présence d'un collègue", "Se laisser distraire par des jeux"], correct: 1, explanation: "Le profil indique qu'il faut 'Savoir résister à la solitude'." },
+            { q: "En matière d'organisation dans l'espace, l'agent doit posséder :", hint: "Une représentation mentale claire de sa zone de travail.", options: ["Un GPS intégré obligatoirement", "Le sens de l'orientation et une structure mentale des lieux", "Une carte papier en permanence à la main", "Un diplôme universitaire en géographie"], correct: 1, explanation: "L'agent doit avoir le sens de l'orientation et une structure mentale des lieux." },
+
+            // Portiers d'établissements dansants
+            { q: "Comment est qualifiée la fonction de portier dans un établissement où l'on danse ?", hint: "C'est une mission à statut particulier dans la profession.", options: ["Une fonction militaire", "Une fonction particulière au sein du gardiennage", "Une charge judiciaire", "Une fonction bénévole obligatoire"], correct: 1, explanation: "C'est qualifié dans le texte de 'fonction particulière' du secteur du gardiennage." },
+            { q: "Quelle est la tenue la plus couramment portée par un portier d'établissement dansant ?", hint: "Ce n'est généralement pas un uniforme classique mais une tenue chic.", options: ["Un treillis militaire", "Un costume", "Un uniforme jaune fluo", "Des vêtements de sport"], correct: 1, explanation: "Le portier porte rarement une tenue traditionnelle ; il s'agit la plupart du temps d'un costume." },
+            { q: "S'il exerce en costume, quel symbole officiel doit figurer sur sa tenue ?", hint: "La première lettre du mot 'Vigilis'.", options: ["L'écusson de la police", "Le 'V' de Vigilis", "Le drapeau européen", "Le logo de la discothèque"], correct: 1, explanation: "L'emblème de la sécurité privée (le 'V' de Vigilis) doit figurer sur la tenue." },
+            { q: "Quelle autorité publique délivre la carte d'identification obligatoire du portier ?", hint: "C'est le ministère fédéral de l'Intérieur.", options: ["Le Bourgmestre de la commune", "Le SPF Intérieur", "Le ministère de la Justice", "Le propriétaire du lieu"], correct: 1, explanation: "La carte d'identification est délivrée par le SPF Intérieur." },
+            { q: "Quelles sont les 3 données qui doivent figurer sur la carte d'identification du portier ?", hint: "Identité de l'agent (nom + image) + nom de son employeur.", options: ["Nom, adresse privée, numéro de téléphone", "Photo, nom, dénomination de l'entreprise", "Photo, groupe sanguin, niveau de diplôme", "Nom, numéro d'arme, adresse"], correct: 1, explanation: "La carte contient sa photo, son nom et la dénomination de l'entreprise." },
+            { q: "Comment la carte d'identification doit-elle être portée durant le service ?", options: ["Cachée dans la poche intérieure de la veste", "De manière lisible et visible", "Uniquement sur présentation à la police", "Conservée dans le coffre du vestiaire"], correct: 1, explanation: "Il doit toujours l'avoir sur lui de manière lisible et visible." },
+            { q: "Afin d'assurer la sécurité à l'entrée d'une discothèque, le portier a pour mission d' :", hint: "Empêcher les fauteurs de troubles potentiels ou personnes saoules d'entrer.", options: ["Interdire l'entrée aux personnes violentes ou éméchées", "Vendre des tickets d'accès", "Fouiller intégralement les coffres de voitures", "Faire passer un éthylotest obligatoire à chaque client"], correct: 0, explanation: "Le portier interdit l'entrée aux personnes violentes ou éméchées." },
+            { q: "En cas d'altération du calme ou de bagarre à l'intérieur de l'établissement, le portier doit :", hint: "Son but est d'apaiser le climat et d'isoler les éléments perturbateurs.", options: ["Fermer immédiatement l'établissement", "Intervenir pour ramener la convivialité, écarter les bagarreurs et les sortir si nécessaire", "Utiliser du gaz lacrymogène", "Appeler un chien de défense"], correct: 1, explanation: "Il intervient pour ramener la convivialité, écarte les bagarreurs et les sort si nécessaire." },
+            { q: "À quelle condition stricte un portier peut-il effectuer un contrôle superficiel des vêtements et sacs ?", hint: "Double condition : accord du client + égalité de genre.", options: ["Si le client paraît suspect", "Si le client est d'accord et s'il est du même sexe que le portier", "Uniquement après minuit", "Sans l'accord du client si le gérant l'exige"], correct: 1, explanation: "Uniquement si le client est d'accord ET s'il s'agit d'une personne du même sexe." },
+            { q: "Quel est l'objectif unique du contrôle superficiel effectué à l'entrée par un portier ?", hint: "Éviter l'introduction d'objets menaçants.", options: ["Chercher de l'argent non déclaré", "Chercher des armes ou des objets dangereux", "Vérifier la marque des vêtements", "Confisquer les boissons achetées à l'extérieur"], correct: 1, explanation: "C'est pour chercher des armes ou des objets dangereux." },
+            { q: "Si un client refuse catégoriquement le contrôle superficiel à l'entrée, le portier peut :", hint: "Si le contrôle est refusé, la personne ne peut entrer.", options: ["Le contraindre par la force", "Lui refuser l'accès à l'établissement", "L'amener au poste de police", "Lui infliger une amende forfaitaire"], correct: 1, explanation: "Il peut refuser l'accès à un client qui s'oppose à ce contrôle." },
+            { q: "Concernant la vérification de l'âge d'un client, que précise la loi pour le portier ?", hint: "Seules les forces de l'ordre ont le pouvoir de contrôle d'identité.", options: ["Il doit exiger la carte d'identité à l'entrée", "Il NE PEUT PAS demander de documents d'identité", "Il peut conserver la carte d'identité durant la soirée", "Il doit scanner la carte d'identité des mineurs"], correct: 1, explanation: "Un portier NE PEUT PAS demander des documents d'identité (même pour vérifier si membre/majeur)." },
+            { q: "Parmi les équipements suivants, lesquels sont STRICTEMENT INTERDITS à l'utilisation par un portier ?", hint: "Ces équipements de contrainte/défense lui sont proscrits.", options: ["Le téléphone et le costume", "Les menottes, armes, matraques et chiens", "La carte d'identification et le badge", "Le lampe de poche et la radio"], correct: 1, explanation: "Un portier ne peut pas utiliser de menottes, d'armes, de matraques ou de chiens." },
+            { q: "À la sortie de l'établissement, le portier a-t-il le droit d'effectuer des fouilles dans les sacs des clients ?", hint: "Le contrôle se limite à l'entrée sous conditions.", options: ["Oui, pour éviter les vols de bouteilles ou verrerie", "Non, les contrôles de sortie lui sont interdits", "Oui, si le client a consommé de l'alcool", "Seulement si le client est accompagné"], correct: 1, explanation: "Il est interdit au portier d'effectuer un contrôle de sortie (ex: fouiller lui-même les sacs)." },
+            { q: "Quelle entité publique/ferroviaire est mentionnée dans le document en lien avec le gardiennage mobile ?", hint: "C'est le service de sécurité des chemins de fer belges.", options: ["Infrabel", "Sécurail", "STIB", "TEC"], correct: 1, explanation: "La page 8 mentionne 'Gardiennage mobile : Ppt + Sécurail'." }
+        ];
+
+        let questions = [];
+        let currentIndex = 0;
+        let userAnswers = {};
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function resetQuiz() {
+            const shuffledQ = shuffleArray(rawQuestions);
+            
+            questions = shuffledQ.map(qObj => {
+                const optionsWithOrigIndex = qObj.options.map((opt, idx) => ({
+                    text: opt,
+                    isCorrect: idx === qObj.correct
+                }));
+                const shuffledOpts = shuffleArray(optionsWithOrigIndex);
+                const newCorrectIndex = shuffledOpts.findIndex(o => o.isCorrect);
+
+                return {
+                    q: qObj.q,
+                    hint: qObj.hint,
+                    options: shuffledOpts.map(o => o.text),
+                    correct: newCorrectIndex,
+                    explanation: qObj.explanation
+                };
+            });
+
+            currentIndex = 0;
+            userAnswers = {};
+
+            document.getElementById('quiz-box').classList.remove('hidden');
+            document.getElementById('result-box').classList.add('hidden');
+            updateHeader();
+            renderQuestion();
+        }
+
+        function updateHeader() {
+            document.getElementById('progress-text').innerText = `Question ${currentIndex + 1} / ${questions.length}`;
+            const answeredCount = Object.keys(userAnswers).length;
+            let score = 0;
+            Object.keys(userAnswers).forEach(idx => {
+                if (userAnswers[idx] === questions[idx].correct) score++;
+            });
+            document.getElementById('score-text').innerText = score;
+            document.getElementById('answered-text').innerText = answeredCount;
+
+            const progressPct = ((currentIndex + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPct}%`;
+        }
+
+        function renderQuestion() {
+            const currentQ = questions[currentIndex];
+            document.getElementById('question-text').innerText = `${currentIndex + 1}. ${currentQ.q}`;
+            
+            // Reset hint box
+            document.getElementById('hint-box').classList.add('hidden');
+            document.getElementById('hint-text').innerText = currentQ.hint || "Pas d'indice particulier pour cette question.";
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const hasAnswered = userAnswers.hasOwnProperty(currentIndex);
+            const selectedOpt = userAnswers[currentIndex];
+
+            currentQ.options.forEach((optText, optIndex) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-4 rounded-xl border text-sm md:text-base font-medium flex justify-between items-center shadow-sm transition-all `;
+                
+                if (!hasAnswered) {
+                    btn.className += `border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 text-slate-700`;
+                    btn.onclick = () => selectOption(optIndex);
+                } else {
+                    btn.disabled = true;
+                    if (optIndex === currentQ.correct) {
+                        btn.className += `border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold`;
+                    } else if (optIndex === selectedOpt) {
+                        btn.className += `border-rose-500 bg-rose-50 text-rose-900`;
+                    } else {
+                        btn.className += `border-slate-200 bg-slate-50 text-slate-400 opacity-60`;
+                    }
+                }
+
+                btn.innerHTML = `<span>${optText}</span>`;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Feedback box
+            const feedbackEl = document.getElementById('feedback');
+            if (hasAnswered) {
+                feedbackEl.classList.remove('hidden');
+                if (selectedOpt === currentQ.correct) {
+                    feedbackEl.className = "p-4 rounded-xl mb-6 text-sm md:text-base font-medium bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    feedbackEl.innerHTML = `<strong>Correct !</strong> ${currentQ.explanation}`;
+                } else {
+                    feedbackEl.className = "p-4 rounded-xl mb-6 text-sm md:text-base font-medium bg-rose-100 text-rose-800 border border-rose-200";
+                    feedbackEl.innerHTML = `<strong>Incorrect.</strong> ${currentQ.explanation}`;
+                }
+            } else {
+                feedbackEl.classList.add('hidden');
+            }
+
+            // Buttons state
+            document.getElementById('prev-btn').disabled = currentIndex === 0;
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = !hasAnswered;
+
+            if (currentIndex === questions.length - 1) {
+                nextBtn.innerText = "Voir les résultats";
+            } else {
+                nextBtn.innerText = "Suivant";
+            }
+
+            updateHeader();
+        }
+
+        function toggleHint() {
+            const hintBox = document.getElementById('hint-box');
+            hintBox.classList.toggle('hidden');
+        }
+
+        function selectOption(optIndex) {
+            userAnswers[currentIndex] = optIndex;
+            renderQuestion();
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-box').classList.add('hidden');
+            document.getElementById('result-box').classList.remove('hidden');
+
+            let score = 0;
+            questions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correct) score++;
+            });
+
+            document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+
+            const commentEl = document.getElementById('performance-comment');
+            const ratio = score / questions.length;
+            if (ratio === 1) {
+                commentEl.innerText = "Excellence absolue ! Vous maîtrisez parfaitement la législation, les prérequis et le cadre déontologique du gardiennage.";
+            } else if (ratio >= 0.8) {
+                commentEl.innerText = "Très bon travail ! Vos connaissances sur la sécurité privée et la loi de 2017 sont très solides.";
+            } else if (ratio >= 0.5) {
+                commentEl.innerText = "Résultat correct. Une révision des spécificités (activités 1 à 13 et règles liées aux portiers) vous permettra de vous perfectionner.";
+            } else {
+                commentEl.innerText = "Des révisions approfondies du document sont nécessaires pour bien assimiler le cadre réglementaire et les interdictions.";
+            }
+        }
+
+        // Start initial quiz
+        resetQuiz();
+    </script>
+</body>
+</html>
