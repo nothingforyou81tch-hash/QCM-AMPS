@@ -3,351 +3,1776 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCM Sécurité Privée - 50 Questions</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Application de Révision - Sécurité Privée & Gardiennage</title>
     <style>
-        .option-btn {
-            transition: all 0.2s ease-in-out;
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #475569;
+            --accent: #f59e0b;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .logo-title h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-title p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-pill {
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .settings-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .settings-btn:hover {
+            background: #f1f5f9;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Accueil */
+        .welcome-hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .welcome-hero h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+
+        .welcome-hero p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .mode-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .mode-card:hover {
+            transform: translateY(-4px);
+            border-color: #cbd5e1;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .mode-card:hover::before {
+            opacity: 1;
+        }
+
+        .mode-icon {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .mode-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Boutons & Contrôles communs */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .back-bar {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Section Révision (Fiches) */
+        .revision-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .theme-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-card h3 {
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+        .theme-content ul, .theme-content ol {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .theme-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* QCM & Examen */
+        .quiz-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .quiz-progress-bar-container {
+            background: var(--border);
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .quiz-progress-bar {
+            background: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-btn {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         .option-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .option-btn.correct {
+            background: #dcfce7 !important;
+            border-color: var(--success) !important;
+            color: #166534;
+        }
+
+        .option-btn.incorrect {
+            background: #fee2e2 !important;
+            border-color: var(--error) !important;
+            color: #991b1b;
+        }
+
+        .explanation-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .explanation-box.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Texte à trous */
+        .fib-sentence {
+            font-size: 1.2rem;
+            line-height: 2.2;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .fib-input {
+            border: none;
+            border-bottom: 2px solid var(--primary);
+            background: #f1f5f9;
+            padding: 6px 12px;
+            font-size: 1.1rem;
+            border-radius: 6px 6px 0 0;
+            outline: none;
+            width: 180px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+
+        .fib-input:focus {
+            background: #e2e8f0;
+            border-color: var(--primary-dark);
+        }
+
+        .fib-input.correct-input {
+            background: #dcfce7;
+            border-color: var(--success);
+            color: #166534;
+        }
+
+        .fib-input.incorrect-input {
+            background: #fee2e2;
+            border-color: var(--error);
+            color: #991b1b;
+        }
+
+        .fib-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Bulles d'aide Duolingo style */
+        .bubbles-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .bubbles-container.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .help-bubble {
+            background: white;
+            border: 2px solid var(--border);
+            border-bottom-width: 4px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .help-bubble:hover {
+            background: #f1f5f9;
             transform: translateY(-2px);
+        }
+
+        .help-bubble.selected {
+            background: #e0f2fe;
+            border-color: #0284c7;
+            color: #0369a1;
+            border-bottom-width: 2px;
+            transform: translateY(2px);
+        }
+
+        /* Erreurs & Récapitulatif */
+        .error-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .error-item h4 {
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-details {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .correct-ans-tag {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .user-ans-tag {
+            color: var(--error);
+            font-weight: 600;
+        }
+
+        /* Modal Paramètres */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        @media (max-width: 640px) {
+            header { padding: 1rem; }
+            .header-stats { gap: 10px; }
+            .stat-pill { padding: 4px 8px; font-size: 0.75rem; }
+            .quiz-card { padding: 1.25rem; }
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col items-center p-4 md:p-8">
+<body>
 
-    <!-- Header -->
-    <header class="w-full max-w-4xl bg-indigo-900 text-white rounded-2xl p-6 shadow-lg mb-6 text-center relative overflow-hidden">
-        <h1 class="text-2xl md:text-3xl font-bold mb-2">Grand QCM : Sécurité Privée & Gardiennage</h1>
-        <p class="text-indigo-200 text-sm md:text-base">Basé sur la loi du 2 octobre 2017 - 50 Questions d'entraînement</p>
+    <header>
+        <div class="logo-area" onclick="app.showView('home')">
+            <div class="logo-icon">🛡️</div>
+            <div class="logo-title">
+                <h1>Gardiennage & Sécurité</h1>
+                <p>Application de Révision Officielle</p>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-pill" title="Score cumulé">⭐ <span id="global-score">0</span></div>
+            <div class="stat-pill" title="Série de bonnes réponses">🔥 <span id="global-streak">0</span></div>
+            <button class="settings-btn" onclick="app.openSettings()">⚙️ Paramètres</button>
+        </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8 relative">
-        
-        <!-- Controls Bar -->
-        <div class="flex flex-wrap items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-4">
-            <div class="flex items-center space-x-2">
-                <span class="text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-wider">Progression :</span>
-                <span id="progress-text" class="text-sm md:text-base font-bold text-indigo-600">Question 1 / 50</span>
+    <main>
+        <!-- VUE ACCUEIL -->
+        <section id="view-home" class="view active">
+            <div class="welcome-hero">
+                <h2>Préparez votre examen en toute confiance</h2>
+                <p>Révisez exclusivement le contenu officiel des pages 1 à 5 du cours de sécurité privée.</p>
             </div>
-            
-            <div class="flex items-center space-x-4">
-                <div class="text-xs md:text-sm font-semibold text-slate-600">
-                    Score : <span id="score-text" class="text-emerald-600 font-bold">0</span> / <span id="answered-text">0</span>
+
+            <div class="modes-grid">
+                <div class="mode-card" onclick="app.startRevision()">
+                    <div class="mode-icon">📚</div>
+                    <div>
+                        <h3>Révision</h3>
+                        <p>Relire et apprendre le cours structuré par thèmes (termes clés en gras).</p>
+                    </div>
+                    <div style="margin-top: 1rem; font-weight: 600; color: var(--primary); font-size: 0.9rem;">Explorer les fiches →</div>
                 </div>
-                <button id="reset-btn" onclick="resetQuiz()" class="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Recommencer & Mélanger
-                </button>
-            </div>
-        </div>
 
-        <!-- Progress Bar -->
-        <div class="w-full bg-slate-100 rounded-full h-2.5 mb-6 overflow-hidden">
-            <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 2%"></div>
-        </div>
-
-        <!-- Question View -->
-        <div id="quiz-box">
-            <div class="flex justify-between items-start mb-4">
-                <div id="question-text" class="text-lg md:text-xl font-semibold text-slate-900 leading-snug">
-                    <!-- Question loaded dynamically -->
+                <div class="mode-card" onclick="app.startQCMSetup()">
+                    <div class="mode-icon">🧠</div>
+                    <div>
+                        <h3>QCM</h3>
+                        <p>Tester vos connaissances avec une immense banque de questions (+40).</p>
+                    </div>
+                    <div style="margin-top: 1rem; font-weight: 600; color: var(--primary); font-size: 0.9rem;">Lancer le QCM →</div>
                 </div>
-                <button id="hint-btn" onclick="toggleHint()" class="ml-4 shrink-0 flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-colors">
-                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h-0a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                    Indice
-                </button>
+
+                <div class="mode-card" onclick="app.startFIB()">
+                    <div class="mode-icon">✏️</div>
+                    <div>
+                        <h3>Texte à trous</h3>
+                        <p>Mémoriser les termes importants par saisie libre avec aide interactive (+20).</p>
+                    </div>
+                    <div style="margin-top: 1rem; font-weight: 600; color: var(--primary); font-size: 0.9rem;">Commencer l'exercice →</div>
+                </div>
+
+                <div class="mode-card" onclick="app.startExamSetup()">
+                    <div class="mode-icon">📝</div>
+                    <div>
+                        <h3>Examen</h3>
+                        <p>Simuler un test complet avec score final et correction détaillée.</p>
+                    </div>
+                    <div style="margin-top: 1rem; font-weight: 600; color: var(--primary); font-size: 0.9rem;">Passer l'examen →</div>
+                </div>
+
+                <div class="mode-card" onclick="app.startErrorsReview()">
+                    <div class="mode-icon">❌</div>
+                    <div>
+                        <h3>Mes erreurs</h3>
+                        <p>Revoir spécifiquement les questions que vous avez échouées.</p>
+                    </div>
+                    <div style="margin-top: 1rem; font-weight: 600; color: var(--primary); font-size: 0.9rem;">Réviser mes erreurs (<span id="error-count-badge">0</span>) →</div>
+                </div>
             </div>
+        </section>
 
-            <!-- Hint Display Box -->
-            <div id="hint-box" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-xl mb-6 text-xs md:text-sm text-amber-900 flex items-start gap-2">
-                <span class="font-bold text-amber-700 shrink-0">💡 Indice :</span>
-                <span id="hint-text"></span>
+        <!-- VUE RÉVISION (FICHES) -->
+        <section id="view-revision" class="view">
+            <div class="back-bar">
+                <button class="btn btn-secondary" onclick="app.showView('home')">← Retour à l'accueil</button>
             </div>
-
-            <div id="options-container" class="space-y-3 mb-6">
-                <!-- Options loaded dynamically -->
+            <div class="revision-container" id="revision-content-container">
+                <!-- Généré dynamiquement -->
             </div>
+        </section>
 
-            <!-- Feedback Message -->
-            <div id="feedback" class="hidden p-4 rounded-xl mb-6 text-sm md:text-base font-medium"></div>
-
-            <!-- Navigation Buttons -->
-            <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                <button id="prev-btn" onclick="prevQuestion()" disabled class="px-4 py-2 bg-slate-100 text-slate-400 font-medium rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 transition-colors">
-                    Précédent
-                </button>
-                <button id="next-btn" onclick="nextQuestion()" disabled class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors">
-                    Suivant
-                </button>
+        <!-- VUE QCM / EXAMEN / ERREURS -->
+        <section id="view-quiz" class="view">
+            <div class="back-bar">
+                <button class="btn btn-secondary" onclick="app.showView('home')">← Abandonner l'exercice</button>
             </div>
-        </div>
-
-        <!-- Completion Screen (hidden by default) -->
-        <div id="result-box" class="hidden text-center py-8">
-            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <div class="quiz-card">
+                <div class="quiz-progress-bar-container">
+                    <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+                </div>
+                <div class="quiz-meta">
+                    <span id="quiz-counter">Question 1 / 10</span>
+                    <span id="quiz-mode-label">Mode QCM</span>
+                </div>
+                <div class="question-text" id="quiz-question-text">Chargement de la question...</div>
+                <div class="options-list" id="quiz-options-list"></div>
+                <div class="explanation-box" id="quiz-explanation"></div>
+                <div style="display: flex; justify-content: flex-end;">
+                    <button class="btn" id="quiz-next-btn" style="display: none;" onclick="app.nextQuizQuestion()">Question suivante →</button>
+                </div>
             </div>
-            <h2 class="text-2xl font-bold text-slate-900 mb-2">QCM Terminé !</h2>
-            <p class="text-slate-600 mb-6">Voici votre résultat final :</p>
-            <div class="text-4xl font-extrabold text-indigo-600 mb-6" id="final-score">0 / 50</div>
-            <p id="performance-comment" class="text-sm md:text-base text-slate-700 mb-8 max-w-md mx-auto"></p>
-            <button onclick="resetQuiz()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                Recommencer avec de nouvelles questions mélangées
-            </button>
-        </div>
+        </section>
 
+        <!-- VUE TEXTE À TROUS -->
+        <section id="view-fib" class="view">
+            <div class="back-bar">
+                <button class="btn btn-secondary" onclick="app.showView('home')">← Retour à l'accueil</button>
+            </div>
+            <div class="quiz-card">
+                <div class="quiz-progress-bar-container">
+                    <div class="quiz-progress-bar" id="fib-progress-bar"></div>
+                </div>
+                <div class="quiz-meta">
+                    <span id="fib-counter">Texte à trous 1 / 10</span>
+                    <span id="fib-help-indicator">💡 Aides utilisées : 0</span>
+                </div>
+                
+                <div class="fib-sentence" id="fib-sentence-container">
+                    <!-- Phrase avec inputs dynamiques -->
+                </div>
+
+                <div class="bubbles-container" id="fib-bubbles-container">
+                    <!-- Bulles d'aide -->
+                </div>
+
+                <div class="fib-controls">
+                    <button class="btn" id="fib-validate-btn" onclick="app.validateFIB()">✅ Valider</button>
+                    <button class="btn btn-secondary" id="fib-help-btn" onclick="app.toggleFIBHelp()">💡 AIDE</button>
+                    <button class="btn" id="fib-next-btn" style="display: none;" onclick="app.nextFIBQuestion()">Question suivante →</button>
+                </div>
+
+                <div class="explanation-box" id="fib-explanation"></div>
+            </div>
+        </section>
+
+        <!-- VUE MES ERREURS -->
+        <section id="view-errors" class="view">
+            <div class="back-bar">
+                <button class="btn btn-secondary" onclick="app.showView('home')">← Retour à l'accueil</button>
+            </div>
+            <div class="quiz-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>❌ Mes Erreurs Enregistrées</h2>
+                    <button class="btn" id="redo-errors-btn" onclick="app.startRedoErrors()" style="display:none;">🔄 Refaire mes erreurs</button>
+                </div>
+                <div id="errors-list-container">
+                    <!-- Liste des erreurs -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VUE CONFIG EXAMEN / QCM -->
+        <section id="view-setup" class="view">
+            <div class="back-bar">
+                <button class="btn btn-secondary" onclick="app.showView('home')">← Retour à l'accueil</button>
+            </div>
+            <div class="quiz-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
+                <h2 id="setup-title" style="margin-bottom: 1rem;">Configuration de l'exercice</h2>
+                <p id="setup-desc" style="color: var(--text-muted); margin-bottom: 2rem;">Choisissez vos paramètres pour commencer.</p>
+                
+                <div id="setup-options-container" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+                    <!-- Dynamique -->
+                </div>
+
+                <button class="btn" id="setup-start-btn" onclick="app.confirmSetup()" style="width: 100%; padding: 14px; font-size: 1.1rem;">Lancer l'exercice 🚀</button>
+            </div>
+        </section>
+
+        <!-- VUE RÉSULTAT EXAMEN -->
+        <section id="view-result" class="view">
+            <div class="back-bar">
+                <button class="btn btn-secondary" onclick="app.showView('home')">← Retour à l'accueil</button>
+            </div>
+            <div class="quiz-card" style="text-align: center; max-width: 650px; margin: 0 auto;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
+                <h2>Résultats de l'Examen</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Voici le bilan de votre test complet basé sur les pages 1 à 5.</p>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">Score final</div>
+                        <div id="res-score" style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">0 / 0</div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">Pourcentage de réussite</div>
+                        <div id="res-percent" style="font-size: 1.8rem; font-weight: 800; color: var(--success);">0 %</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn" onclick="app.showView('home')">Retour à l'accueil</button>
+                    <button class="btn btn-secondary" onclick="app.startExamSetup()">Refaire un examen</button>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <!-- MODAL PARAMÈTRES -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Paramètres</h3>
+                <button class="close-modal" onclick="app.closeSettings()">&times;</button>
+            </div>
+            <div class="setting-row">
+                <span>🔊 Effets sonores</span>
+                <label class="switch">
+                    <input type="checkbox" id="sound-toggle" checked onchange="app.toggleSound(this)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+            <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                <span>🗑️ Réinitialiser mes statistiques</span>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Efface les scores, séries et erreurs enregistrées dans le navigateur.</p>
+                <button class="btn btn-secondary" onclick="app.resetStats()" style="background: #fee2e2; color: var(--error); width: 100%;">Réinitialiser les données</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const rawQuestions = [
-            // Cadre légal et généralités
-            { q: "Quelle loi régit la sécurité privée et particulière en Belgique ?", hint: "Il s'agit d'une loi promulguée à l'automne 2017.", options: ["La loi du 2 octobre 2017", "La loi du 10 avril 1990", "La loi du 15 décembre 2005", "La loi du 1er juin 2020"], correct: 0, explanation: "Le document mentionne explicitement la loi du 2 octobre 2017 réglementant la sécurité privée et particulière." },
-            { q: "Qu'a apporté la loi du 2 octobre 2017 concernant les compétences des agents ?", hint: "Elle n'a pas restreint leurs possibilités d'action.", options: ["Une restriction importante de leurs actions", "Un élargissement de leur champ de compétences", "Le transfert de toutes les missions de police", "L'obligation d'avoir un diplôme universitaire"], correct: 1, explanation: "La loi a élargi le champ de compétences des agents de gardiennage." },
-            { q: "Certaines compétences nouvelles des agents découlent de quel phénomène ?", hint: "Pensez au transfert de tâches du secteur public vers le privé.", options: ["De la privatisation totale des forces de l'ordre", "De l'externalisation de tâches des services de police", "De la suppression du réseau Sécurail", "De la fusion avec la douane"], correct: 1, explanation: "Elles découlent de l'externalisation de certaines tâches des services de police." },
-            { q: "Que requiert l'externalisation de certaines tâches de police vers la sécurité privée ?", hint: "Il s'agit de la mise en commun des forces.", options: ["Une opposition stricte entre les acteurs", "Des synergies entre les acteurs de la sécurité", "Une interdiction totale de communication", "L'armement obligatoire de tous les agents"], correct: 1, explanation: "Le texte indique que cela appelle à des synergies entre les acteurs de la sécurité." },
-            { q: "Le gardiennage concerne toute forme de surveillance et de protection de quoi ?", hint: "Il s'agit d'un binôme matériel et humain.", options: ["Uniquement de bâtiments publics", "Uniquement des personnes VIP", "De biens et de personnes", "Des frontières nationales uniquement"], correct: 2, explanation: "Cela concerne toute forme de surveillance et de protection de biens et de personnes." },
+        /* ==========================================================================
+           1. MOTEUR AUDIO (WEB AUDIO API ADOUCI) & STOCKAGE (LOCALSTORAGE)
+           ================================================================---------- */
+        class SoundEngine {
+            constructor() {
+                this.enabled = true;
+                this.ctx = null;
+            }
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+            }
+            playTone(freq, type, duration, delay = 0, targetGain = 0.12) {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                try {
+                    setTimeout(() => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = type;
+                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                        gain.gain.setValueAtTime(targetGain, this.ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start();
+                        osc.stop(this.ctx.currentTime + duration);
+                    }, delay);
+                } catch(e) {}
+            }
+            success() {
+                this.playTone(523.25, 'sine', 0.1); 
+                this.playTone(659.25, 'sine', 0.15, 100); 
+                this.playTone(783.99, 'sine', 0.25, 200); 
+            }
+            error() {
+                // Son d'erreur adouci (onde sine au lieu de sawtooth, fréquences plus basses et douces)
+                this.playTone(280, 'sine', 0.18, 0, 0.08); 
+                this.playTone(220, 'sine', 0.22, 90, 0.06); 
+            }
+            click() {
+                this.playTone(400, 'sine', 0.04, 0, 0.05);
+            }
+            complete() {
+                this.playTone(523.25, 'sine', 0.1, 0);
+                this.playTone(659.25, 'sine', 0.1, 120);
+                this.playTone(783.99, 'sine', 0.1, 240);
+                this.playTone(1046.50, 'sine', 0.4, 360);
+            }
+        }
 
-            // Domaines et formes d'organisation
-            { q: "En combien de domaines d'activités le secteur du gardiennage se subdivise-t-il au total ?", hint: "C'est un nombre supérieur à 10.", options: ["5 domaines", "8 domaines", "10 domaines", "13 domaines"], correct: 3, explanation: "Le secteur du gardiennage se subdivise en 13 domaines d'activités." },
-            { q: "Sous combien de formes le secteur du gardiennage est-il organisé ?", hint: "C'est un chiffre pair inférieur à 5.", options: ["2 formes", "4 formes", "6 formes", "12 formes"], correct: 1, explanation: "Le gardiennage est organisé sous 4 formes." },
-            { q: "Laquelle des propositions suivantes fait partie des 4 formes d'organisation du gardiennage ?", hint: "Pensez aux actions non rémunérées assurées lors d'événements.", options: ["Le bénévolat", "L'association sans but lucratif militaire", "La brigade canine indépendante", "La milice citoyenne"], correct: 0, explanation: "Les 4 formes sont : entreprise de gardiennage, service interne, bénévolat, et employés de concessions publiques." },
-            { q: "Laquelle des formes suivantes N'EST PAS une forme d'organisation du secteur citée dans le texte ?", hint: "Cherchez l'élément à vocation touristique/locale.", options: ["Entreprise de gardiennage", "Service interne de gardiennage", "Syndicat d'initiative", "Employés de concessions publiques"], correct: 2, explanation: "Le syndicat d'initiative n’est pas une forme d'organisation du gardiennage." },
+        const sound = new SoundEngine();
 
-            // Domaines d'activités décrits sous forme fonctionnelle
-            { q: "Comment qualifie-t-on la mission de surveillance et de protection de biens immobiliers sans déplacement de l'agent sur un périmètre étendu ?", hint: "L'agent reste fixe sur un lieu déterminé.", options: ["Gardiennage mobile", "Gardiennage statique", "Sweeping", "Inspection magasin"], correct: 1, explanation: "La surveillance fixe de biens mobiliers ou immobiliers entre dans le gardiennage statique." },
-            { q: "Un agent effectuant une patrouille en véhicule et devant intervenir rapidement après le déclenchement d'une alarme réalise :", hint: "L'agent est en mouvement dans une zone géographique.", options: ["Du gardiennage statique", "Du gardiennage mobile", "Du sweeping", "Un contrôle de concession publique"], correct: 1, explanation: "Le gardiennage mobile comprend la patrouille et l'intervention après alarme." },
-            { q: "La surveillance et la protection spécialisées lors du déplacement de sommes d'argent ou d'objets précieux relèvent de :", hint: "Cela nécessite souvent des véhicules blindés.", options: ["La protection rapprochée", "Du transport de valeurs", "De l'accompagnement routier", "Du contrôle de sortie"], correct: 1, explanation: "Il s'agit du domaine du transport de valeurs." },
-            { q: "La réception, l'analyse et le traitement à distance des signaux d'alerte provenant de sites surveillés sont pris en charge par :", hint: "Il s'agit d'une infrastructure dédiée à distance.", options: ["Le sweeping", "La gestion de centraux d'alarme", "La télésurveillance événementielle", "Le gardiennage statique"], correct: 1, explanation: "La gestion de centraux d'alarme est une activité spécifique du gardiennage." },
-            { q: "Assurer la sécurité physique individuelle et constante d'une personnalité ou d'un VIP correspond à :", hint: "C'est une mission centrée sur un individu précis.", options: ["La protection rapprochée de personnes", "L'inspection magasin", "Le gardiennage en milieu de sortie", "L'accompagnement routier"], correct: 0, explanation: "Il s'agit de la protection rapprochée de personnes." },
-            { q: "Un agent opérant en civil dans un commerce pour prévenir et détecter le vol à l'étalage effectue une mission de :", hint: "Cette mission cible les clients fraudeurs dans un commerce.", options: ["Gardiennage d'événements", "Mission inspecteur-magasin", "Gardiennage milieu de sortie", "Sweeping"], correct: 1, explanation: "C'est la surveillance et le contrôle de personnes dans le cadre de la mission inspecteur-magasin." },
-            { q: "La gestion des flux de visiteurs et du contrôle d'accès lors d'un festival, d'une foire ou d'un match de football relève du :", hint: "Concerne les rassemblements publics temporaires.", options: ["Gardiennage milieu de sortie", "Gardiennage d'événements", "Service de concession publique", "Transport de valeurs"], correct: 1, explanation: "Il s'agit du gardiennage d'événements." },
-            { q: "La surveillance et la régulation du public à l'entrée et aux abords des discothèques ou cafés dansants correspondent au :", hint: "C'est la fonction spécifique de portier nocturne.", options: ["Gardiennage d'événements", "Gardiennage milieu de sortie", "Sweeping", "Gardiennage mobile"], correct: 1, explanation: "C'est la surveillance et le contrôle de personnes en milieu de sortie." },
-            { q: "L'inspection minutieuse d'un site ou d'une salle à la recherche d'équipements d'écoute ou d'objets suspects avant une réunion sensible est appelée :", hint: "Ce terme anglophone désigne un nettoyage / balayage de sécurité.", options: ["Sweeping", "Télésurveillance", "Constatation d'infraction", "Inspection magasin"], correct: 0, explanation: "La recherche de micros/objets dangereux sur un site est le Sweeping." },
-            { q: "La constatation d'infractions sur des biens situés sur le domaine public par des agents privés nécessite au préalable :", hint: "Une autorisation officielle est indispensable.", options: ["Uniquement l'accord du propriétaire voisin", "Un ordre de l'autorité compétente ou du titulaire d'une concession publique", "La présence permanente d'un policier", "Une déclaration dans un journal local"], correct: 1, explanation: "Elle se fait sur ordre de l'autorité compétente ou du titulaire d'une concession publique." },
-            { q: "L'activité visant à faciliter la traversée ou le déplacement sécurisé de groupes de piétons sur la voie publique est :", hint: "L'objectif principal est la prévention des accidents de la circulation.", options: ["L'accompagnement de groupes en vue de la sécurité routière", "Le gardiennage mobile", "La protection rapprochée", "Le gardiennage événementiel"], correct: 0, explanation: "Il s'agit de l'accompagnement de groupes de personnes en vue de la sécurité routière." },
-            { q: "Le télépilotage ou l'exploitation de moyens techniques volants autonomes à des fins de surveillance correspond à :", hint: "Dispositif technologique moderne d'observation aérienne.", options: ["La télésurveillance classique", "La commande de moyens de sécurité techniques (drones)", "Le sweeping électronique", "La centrale d'alarme mobile"], correct: 1, explanation: "C'est la commande de moyens de sécurité techniques (drones)." },
-            { q: "Toute activité de contrôle de personnes qui ne relève ni des magasins, ni des événements, ni des milieux de sortie est classée comme :", hint: "C'est la catégorie subsidiaire/générale pour le contrôle des individus.", options: ["Activité de contrôle de personnes autre (catégorie complémentaire)", "Gardiennage statique d'urgence", "Service interne de police", "Protection rapprochée collective"], correct: 0, explanation: "Il s'agit des activités de contrôle de personnes autres que les activités 6, 7 et 8." },
+        /* ==========================================================================
+           2. DONNÉES DU COURS
+           ================================================================---------- */
+        const COURS_DATA = {
+            fiches: [
+                {
+                    title: "La sécurité privée",
+                    content: "La <strong>sécurité privée</strong> prend de plus en plus de place dans notre société. La <strong>loi du 2 octobre 2017</strong> réglementant la sécurité privée et particulière a élargi le champ de compétences des agents de gardiennage. Certaines d'entre elles découlent de l'<strong>externalisation de tâches</strong> des services de police et appellent à des <strong>synergies</strong> entre les acteurs de la sécurité."
+                },
+                {
+                    title: "Le gardiennage (Définition & 4 Formes)",
+                    content: "Le <strong>gardiennage</strong> concerne toute forme de <strong>surveillance</strong> et de <strong>protection</strong> de biens et de personnes. Ce secteur se subdivise en <strong>13 domaines d'activités</strong> et est organisé sous <strong>4 formes</strong> :<ul><li>l'<strong>entreprise de gardiennage</strong>,</li><li>le <strong>service interne de gardiennage</strong>,</li><li>le <strong>bénévolat</strong></li><li>et les <strong>employés de concessions publiques</strong>.</li></ul>"
+                },
+                {
+                    title: "Les 13 domaines d'activités",
+                    content: "<ol><li>La surveillance et protection de biens mobiliers ou immobiliers en <strong>gardiennage statique</strong></li><li>La surveillance et protection de biens mobiliers ou immobiliers en <strong>gardiennage mobile</strong>, et ce compris la <strong>patrouille</strong> et l'<strong>intervention après alarme</strong></li><li>La surveillance et la protection de <strong>transport de valeurs</strong></li><li>La <strong>gestion de centraux d'alarme</strong></li><li>La <strong>protection rapprochée de personnes</strong></li><li>La surveillance et le contrôle de personnes dans le cadre de la mission <strong>inspecteur-magasin</strong></li><li>La surveillance et le contrôle de personnes dans le cadre du <strong>gardiennage d'événements</strong></li><li>La surveillance et le contrôle de personnes dans le cadre du <strong>gardiennage milieu de sortie</strong></li><li><strong>SWEEPING</strong> : Le sweeping est une fouille préventive et minutieuse d'un lieu visant à détecter et éliminer toute menace physique (intrus, colis suspects) ou électronique (micros, caméras cachées) afin de sécuriser totalement l'espace avant son utilisation.</li><li>Réalisation de <strong>constatations d'infractions</strong> se rapportant exclusivement à la situation immédiatement perceptible de biens se trouvant sur le <strong>domaine public</strong>, sur ordre de l'autorité compétente ou du titulaire d'une concession publique</li><li><strong>Accompagnement de groupes de personnes en vue de la sécurité routière</strong></li><li><strong>Commande de moyens de sécurité techniques (drones)</strong></li><li>Activités de <strong>contrôle de personnes</strong> autre que les activités 6-7-8.</li></ol>"
+                },
+                {
+                    title: "Le contexte général de travail",
+                    content: "<ul><li><strong>Situation de travail :</strong> <strong>Horaire de jour ou de nuit</strong>, variable avec ou sans coupure.</li><li><strong>Déplacements :</strong> à l'<strong>intérieur du pays</strong> ou à l'<strong>étranger</strong>.</li><li><strong>Environnement de travail :</strong> <strong>diversifié</strong> (travail en extérieur peu importe les conditions climatiques, travail <strong>individuel ou en équipe</strong>, travail dans les lieux où le public est ou n'est pas présent).</li></ul>"
+                },
+                {
+                    title: "Les prérequis spécifiques",
+                    content: "<ul><li>Rédaction de <strong>courts rapports précis et concis</strong></li><li>Utilisation correcte des <strong>outils de travail</strong> (matériel informatique, système d'alarme, ...)</li><li><strong>Écoute active</strong> des personnes et fourniture de renseignements</li><li><strong>Conduite d'un véhicule</strong></li><li>Assurer et gérer les <strong>contacts téléphoniques</strong></li><li><strong>Station debout ou assise de longue durée</strong></li><li>Travailler sur un <strong>écran</strong> pendant de longues périodes</li></ul>"
+                },
+                {
+                    title: "L'impact psychologique & Risques professionnels",
+                    content: "<ul><li><strong>Impact psychologique :</strong> Port d'une <strong>tenue de travail</strong> ou de <strong>gilet pare-balles</strong>, port d'une <strong>carte d'identification (photo)</strong>, port d'une <strong>arme</strong>, travail avec un <strong>chien</strong>, compétence limitée du <strong>contrôle des vêtements et des bagages à main</strong>.</li><li><strong>Risques professionnels :</strong> <strong>Exposition au danger</strong>, <strong>traumatisme psychologique</strong> suite à un incident avec séquelles, <strong>décès ou blessures graves</strong> suite à un accident/incendie/explosion/accident de la circulation, <strong>tension nerveuse ou réaction physiologique</strong> (<strong>stress, insomnie, somnolence, énervement</strong>), <strong>risques inhérents particuliers</strong> sur des lieux ou des biens à surveiller.</li></ul>"
+                },
+                {
+                    title: "Les outils de travail",
+                    content: "<ul><li>Les <strong>systèmes d'alarme</strong></li><li>Les <strong>véhicules blindés ou les véhicules de transports</strong></li><li>Les <strong>appareils de comptage, de tri ou de pesage d'argent</strong></li><li>Utilisation des <strong>centrales électroniques</strong></li><li><strong>Téléphone portable ou les radios</strong></li><li><strong>Système informatique</strong></li><li><strong>Système de neutralisation</strong></li><li><strong>Système de contrôle d'accès</strong></li><li><strong>Télésurveillance</strong></li><li><strong>Armes</strong></li><li>Les <strong>chiens</strong></li></ul>"
+                },
+                {
+                    title: "Le profil psychologique idéal",
+                    content: "<ul><li><strong>Respecter son prochain</strong>, ne pas être étiqueté comme raciste, ne pas être de nature violente et <strong>maîtriser ses réactions</strong> en situation de conflit et de danger.</li><li>Être <strong>résistant au stress et au danger</strong>.</li><li>Savoir résister au <strong>sentiment de pouvoir</strong> (tenue, carte, arme, chien).</li><li>Savoir <strong>observer</strong>, constater rapidement des éléments visuels et auditifs, remarquer rapidement des <strong>anomalies</strong>.</li><li>Garder une <strong>attention soutenue</strong>, savoir résister à la <strong>solitude</strong>.</li><li>Savoir s'organiser dans l'espace (<strong>sens de l'orientation</strong>, <strong>structure mentale des lieux</strong>), analyser et synthétiser des problèmes concrets.</li><li>Rédiger des rapports clairs, concis, exacts et <strong>prendre rapidement des décisions de manière autonome</strong>.</li><li>Développer des <strong>stratégies de résolution de problèmes</strong> et disposer d'une <strong>habileté sociale</strong> (<strong>expression orale</strong>, <strong>diversité</strong>, <strong>calmer panique ou hystérie</strong>).</li><li>Conserver son <strong>calme en situation de crise</strong>, ne pas avoir peur des chiens/armes, savoir patrouiller avec un chien et le <strong>maîtriser</strong>.</li></ul>"
+                }
+            ]
+        };
 
-            // Contexte de travail & Prérequis
-            { q: "Quel type d'horaire caractérise généralement le travail d'un agent de gardiennage ?", hint: "L'agent peut travailler à toute heure et pas forcément en continu.", options: ["Un horaire fixe de bureau de 9h à 17h", "Un horaire de jour ou de nuit, variable avec ou sans coupure", "Uniquement des prestations le week-end", "Des horaires obligatoirement de 12h d'affilée"], correct: 1, explanation: "Le travail se fait selon un horaire de jour ou de nuit, variable avec ou sans coupure." },
-            { q: "Au niveau géographique, où un agent peut-il être amené à se déplacer dans le cadre de ses fonctions ?", hint: "Les déplacements ne se limitent pas à la Belgique.", options: ["Uniquement dans sa commune de résidence", "À l'intérieur du pays ou à l'étranger", "Uniquement dans les installations ferroviaires", "Dans l'Union Européenne uniquement"], correct: 1, explanation: "La situation de travail implique un déplacement à l'intérieur du pays ou à l'étranger." },
-            { q: "Parmi les compétences administratives de base, que doit savoir faire un agent ?", hint: "Cela concerne la communication écrite de faits précis.", options: ["Savoir rédiger de courts rapports précis et concis", "Rédiger des articles de presse", "Parler au moins 4 langues étrangères", "Établir des bilans comptables"], correct: 0, explanation: "La rédaction de courts rapports précis et concis est un prérequis cité." },
-            { q: "Quel comportement physique peut être exigé d'un agent pendant de longues périodes selon la mission ?", hint: "Pensez aux gardes statiques ou au travail sur écran.", options: ["Sauter et courir en continu", "Rester en station debout ou assise de longue durée", "Porter des charges de plus de 50kg à la main", "Nager en eau profonde"], correct: 1, explanation: "Le document mentionne la station debout ou assise de longue durée." },
-            { q: "Quel prérequis technique est lié à la surveillance d'images ou au travail de contrôle ?", hint: "C'est lié à la vidéosurveillance ou aux centrales d'alarme.", options: ["Travailler sur un écran pendant de longues périodes", "Interdiction de regarder un écran pendant le service", "Savoir fabriquer un moniteur vidéo", "Programmer des logiciels complexes"], correct: 0, explanation: "Travailler sur un écran pendant de longues périodes est un prérequis spécifique." },
-
-            // Outils de travail
-            { q: "Lequel des éléments suivants N'EST PAS cité comme outil de travail dans le document ?", hint: "Il s'agit d'un matériel militaire offensif.", options: ["Les véhicules blindés", "Les appareils de pesage d'argent", "Les drones de combat armés", "Les centrales électroniques"], correct: 2, explanation: "Les drones armés ne font pas partie des outils du document." },
-            { q: "Quel type d'équipement spécifique au traitement de l'argent est mentionné dans les outils ?", hint: "Il s'agit d'appareils de traitement fiduciaire.", options: ["Sacs étanches uniquement", "Appareils de comptage, de tri ou de pesage d'argent", "Valises explosives automatiques", "Compteurs Geiger"], correct: 1, explanation: "Le document cite les appareils de comptage, de tri ou de pesage d'argent." },
-            { q: "Quels moyens de communication sans fil sont cités parmi les outils de travail de l'agent ?", hint: "Ce sont les deux moyens les plus répandus sur le terrain.", options: ["Téléphone portable ou radios", "Uniquement le télégraphe", "Pigeons voyageurs", "Mégaphones à pile uniquement"], correct: 0, explanation: "Téléphone portable et radios sont cités comme outils de travail." },
-
-            // Impact psychologique & Risques
-            { q: "Parmi ces éléments, lequel génère un impact psychologique important sur la perception de l'agent ?", hint: "Ce qu'il porte sur lui au niveau vestimentaire ou sécuritaire.", options: ["Le port d'une tenue de travail ou d'un gilet pare-balles", "La signature du contrat de travail", "Le choix de la marque de ses chaussures", "Le calcul des heures supplémentaires"], correct: 0, explanation: "Le port d'une tenue ou d'un gilet pare-balles fait partie des facteurs d'impact psychologique." },
-            { q: "Quelle limitation légale lors d'un contrôle génère un impact psychologique chez l'agent ?", hint: "Cela concerne la vérification des affaires personnelles des clients.", options: ["Compétence limitée du contrôle des vêtements et des bagages à main", "Interdiction de parler au public", "L'obligation d'être toujours accompagné de la police", "L'interdiction de conduire un véhicule"], correct: 0, explanation: "Le texte cite la 'compétence limitée du contrôle des vêtements et des bagages à main'." },
-            { q: "Quel risque professionnel grave peut survenir chez l'agent après un événement traumatisant ?", hint: "Il touche la santé mentale à long terme.", options: ["Traumatisme psychologique suite à un incident avec séquelles", "Augmentation automatique de salaire", "Perte systématique du permis de conduire", "Changement obligatoire d'employeur"], correct: 0, explanation: "Le document mentionne le traumatisme psychologique suite à un incident avec séquelles." },
-            { q: "Parmi les réactions physiologiques au stress ou aux gardes de nuit citées, on trouve :", hint: "Elles touchent le sommeil et les émotions.", options: ["L'insomnie, la somnolence et l'énervement", "La baisse instantanée de la vue", "La croissance musculaire", "L'amnésie totale"], correct: 0, explanation: "Tension nerveuse, stress, insomnie, somnolence, énervement sont cités." },
-
-            // Profil psychologique
-            { q: "Selon le profil psychologique idéal, comment l'agent doit-il gérer la possession d'une arme, d'un chien ou d'un uniforme ?", hint: "L'autorité conférée par le statut ne doit pas dériver.", options: ["En l'exprimant avec fermeté pour intimider le public", "En sachant résister au sentiment de pouvoir pouvant survenir", "En l'utilisant pour imposer sa volonté personnelle", "En exigeant des avantages auprès de sa hiérarchie"], correct: 1, explanation: "L'agent doit savoir résister au sentiment de pouvoir suscité par l'uniforme, l'arme ou le chien." },
-            { q: "Concernant la diversité et les relations humaines, quelle attitude caractérise le profil idéal ?", hint: "C'est l'absence de préjugés et le respect d'autrui.", options: ["Ne pas être étiqueté comme raciste et respecter son prochain", "Préférer une catégorie de population", "Ignorer les personnes étrangères", "Refuser de parler aux jeunes"], correct: 0, explanation: "Le document précise : respecter son prochain et ne pas être étiqueté comme raciste." },
-            { q: "Quelle aptitude sensorielle et d'analyse rapide est exigée chez l'agent ?", hint: "Elle combine la vue et l'ouïe sur le terrain.", options: ["Avoir une vue télescopique", "Savoir observer et constater rapidement des éléments visuels et auditifs", "Avoir une ouïe à ultrasons", "Savoir deviner les intentions par la pensée"], correct: 1, explanation: "Savoir observer et constater rapidement des éléments visuels et auditifs est requis." },
-            { q: "Sur un site qu'il connaît très bien, que doit être capable de déceler un agent vigilant ?", hint: "Détecter ce qui sort du cadre habituel.", options: ["Remarquer rapidement des anomalies dans des situations familières", "Changer la disposition des meubles sans autorisation", "Ignorer les petits détails sans importance", "Remplacer les systèmes d'alarme défaillants"], correct: 0, explanation: "Le profil idéal exige la capacité à remarquer rapidement des anomalies dans des situations familières." },
-            { q: "Quelle capacité psychologique est nécessaire lors de gardes isolées ?", hint: "Certaines gardes se font seul dans le silence.", options: ["Refuser systématiquement le travail isolé", "Savoir résister à la solitude", "Demander toujours la présence d'un collègue", "Se laisser distraire par des jeux"], correct: 1, explanation: "Le profil indique qu'il faut 'Savoir résister à la solitude'." },
-            { q: "En matière d'organisation dans l'espace, l'agent doit posséder :", hint: "Une représentation mentale claire de sa zone de travail.", options: ["Un GPS intégré obligatoirement", "Le sens de l'orientation et une structure mentale des lieux", "Une carte papier en permanence à la main", "Un diplôme universitaire en géographie"], correct: 1, explanation: "L'agent doit avoir le sens de l'orientation et une structure mentale des lieux." },
-
-            // Portiers d'établissements dansants
-            { q: "Comment est qualifiée la fonction de portier dans un établissement où l'on danse ?", hint: "C'est une mission à statut particulier dans la profession.", options: ["Une fonction militaire", "Une fonction particulière au sein du gardiennage", "Une charge judiciaire", "Une fonction bénévole obligatoire"], correct: 1, explanation: "C'est qualifié dans le texte de 'fonction particulière' du secteur du gardiennage." },
-            { q: "Quelle est la tenue la plus couramment portée par un portier d'établissement dansant ?", hint: "Ce n'est généralement pas un uniforme classique mais une tenue chic.", options: ["Un treillis militaire", "Un costume", "Un uniforme jaune fluo", "Des vêtements de sport"], correct: 1, explanation: "Le portier porte rarement une tenue traditionnelle ; il s'agit la plupart du temps d'un costume." },
-            { q: "S'il exerce en costume, quel symbole officiel doit figurer sur sa tenue ?", hint: "La première lettre du mot 'Vigilis'.", options: ["L'écusson de la police", "Le 'V' de Vigilis", "Le drapeau européen", "Le logo de la discothèque"], correct: 1, explanation: "L'emblème de la sécurité privée (le 'V' de Vigilis) doit figurer sur la tenue." },
-            { q: "Quelle autorité publique délivre la carte d'identification obligatoire du portier ?", hint: "C'est le ministère fédéral de l'Intérieur.", options: ["Le Bourgmestre de la commune", "Le SPF Intérieur", "Le ministère de la Justice", "Le propriétaire du lieu"], correct: 1, explanation: "La carte d'identification est délivrée par le SPF Intérieur." },
-            { q: "Quelles sont les 3 données qui doivent figurer sur la carte d'identification du portier ?", hint: "Identité de l'agent (nom + image) + nom de son employeur.", options: ["Nom, adresse privée, numéro de téléphone", "Photo, nom, dénomination de l'entreprise", "Photo, groupe sanguin, niveau de diplôme", "Nom, numéro d'arme, adresse"], correct: 1, explanation: "La carte contient sa photo, son nom et la dénomination de l'entreprise." },
-            { q: "Comment la carte d'identification doit-elle être portée durant le service ?", options: ["Cachée dans la poche intérieure de la veste", "De manière lisible et visible", "Uniquement sur présentation à la police", "Conservée dans le coffre du vestiaire"], correct: 1, explanation: "Il doit toujours l'avoir sur lui de manière lisible et visible." },
-            { q: "Afin d'assurer la sécurité à l'entrée d'une discothèque, le portier a pour mission d' :", hint: "Empêcher les fauteurs de troubles potentiels ou personnes saoules d'entrer.", options: ["Interdire l'entrée aux personnes violentes ou éméchées", "Vendre des tickets d'accès", "Fouiller intégralement les coffres de voitures", "Faire passer un éthylotest obligatoire à chaque client"], correct: 0, explanation: "Le portier interdit l'entrée aux personnes violentes ou éméchées." },
-            { q: "En cas d'altération du calme ou de bagarre à l'intérieur de l'établissement, le portier doit :", hint: "Son but est d'apaiser le climat et d'isoler les éléments perturbateurs.", options: ["Fermer immédiatement l'établissement", "Intervenir pour ramener la convivialité, écarter les bagarreurs et les sortir si nécessaire", "Utiliser du gaz lacrymogène", "Appeler un chien de défense"], correct: 1, explanation: "Il intervient pour ramener la convivialité, écarte les bagarreurs et les sort si nécessaire." },
-            { q: "À quelle condition stricte un portier peut-il effectuer un contrôle superficiel des vêtements et sacs ?", hint: "Double condition : accord du client + égalité de genre.", options: ["Si le client paraît suspect", "Si le client est d'accord et s'il est du même sexe que le portier", "Uniquement après minuit", "Sans l'accord du client si le gérant l'exige"], correct: 1, explanation: "Uniquement si le client est d'accord ET s'il s'agit d'une personne du même sexe." },
-            { q: "Quel est l'objectif unique du contrôle superficiel effectué à l'entrée par un portier ?", hint: "Éviter l'introduction d'objets menaçants.", options: ["Chercher de l'argent non déclaré", "Chercher des armes ou des objets dangereux", "Vérifier la marque des vêtements", "Confisquer les boissons achetées à l'extérieur"], correct: 1, explanation: "C'est pour chercher des armes ou des objets dangereux." },
-            { q: "Si un client refuse catégoriquement le contrôle superficiel à l'entrée, le portier peut :", hint: "Si le contrôle est refusé, la personne ne peut entrer.", options: ["Le contraindre par la force", "Lui refuser l'accès à l'établissement", "L'amener au poste de police", "Lui infliger une amende forfaitaire"], correct: 1, explanation: "Il peut refuser l'accès à un client qui s'oppose à ce contrôle." },
-            { q: "Concernant la vérification de l'âge d'un client, que précise la loi pour le portier ?", hint: "Seules les forces de l'ordre ont le pouvoir de contrôle d'identité.", options: ["Il doit exiger la carte d'identité à l'entrée", "Il NE PEUT PAS demander de documents d'identité", "Il peut conserver la carte d'identité durant la soirée", "Il doit scanner la carte d'identité des mineurs"], correct: 1, explanation: "Un portier NE PEUT PAS demander des documents d'identité (même pour vérifier si membre/majeur)." },
-            { q: "Parmi les équipements suivants, lesquels sont STRICTEMENT INTERDITS à l'utilisation par un portier ?", hint: "Ces équipements de contrainte/défense lui sont proscrits.", options: ["Le téléphone et le costume", "Les menottes, armes, matraques et chiens", "La carte d'identification et le badge", "Le lampe de poche et la radio"], correct: 1, explanation: "Un portier ne peut pas utiliser de menottes, d'armes, de matraques ou de chiens." },
-            { q: "À la sortie de l'établissement, le portier a-t-il le droit d'effectuer des fouilles dans les sacs des clients ?", hint: "Le contrôle se limite à l'entrée sous conditions.", options: ["Oui, pour éviter les vols de bouteilles ou verrerie", "Non, les contrôles de sortie lui sont interdits", "Oui, si le client a consommé de l'alcool", "Seulement si le client est accompagné"], correct: 1, explanation: "Il est interdit au portier d'effectuer un contrôle de sortie (ex: fouiller lui-même les sacs)." },
-            { q: "Quelle entité publique/ferroviaire est mentionnée dans le document en lien avec le gardiennage mobile ?", hint: "C'est le service de sécurité des chemins de fer belges.", options: ["Infrabel", "Sécurail", "STIB", "TEC"], correct: 1, explanation: "La page 8 mentionne 'Gardiennage mobile : Ppt + Sécurail'." }
+        /* ==========================================================================
+           3. BANQUE DE QCM (FAUSSES RÉPONSES PLUS SUBTILES ET DIFFICILES)
+           ========================================================================== */
+        const QCM_BANK = [
+            {
+                q: "Quelle est la date exacte de la loi réglementant la sécurité privée et particulière en Belgique ?",
+                options: ["2 octobre 2017", "12 octobre 2017", "2 novembre 2017", "20 septembre 2017"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "La loi du 2 octobre 2017 réglementant la sécurité privée et particulière a élargi le champ de compétences des agents de gardiennage."
+            },
+            {
+                q: "En combien de domaines d'activités précis le secteur du gardiennage se subdivise-t-il ?",
+                options: ["12 domaines", "13 domaines", "14 domaines", "16 domaines"],
+                answer: 1,
+                level: "🟡 Moyen",
+                explanation: "Le secteur du gardiennage se subdivise exactement en 13 domaines d'activités selon le cours officiel."
+            },
+            {
+                q: "Parmi les propositions suivantes, laquelle ne fait PAS partie des 4 formes d'organisation du gardiennage ?",
+                options: ["L'entreprise de gardiennage", "Le service interne de gardiennage", "L'agence fédérale de gardiennage d'État", "Les employés de concessions publiques"],
+                answer: 2,
+                level: "🔴 Difficile",
+                explanation: "Les 4 formes légales sont l'entreprise de gardiennage, le service interne, le bénévolat et les employés de concessions publiques."
+            },
+            {
+                q: "Quel domaine d'activité correspond précisément au numéro 9 dans le cours ?",
+                options: ["La protection rapprochée de personnes", "Le gardiennage milieu de sortie", "Le sweeping (fouille préventive et minutieuse)", "La gestion de centraux d'alarme"],
+                answer: 2,
+                level: "🔴 Difficile",
+                explanation: "Le numéro 9 correspond au sweeping défini comme une fouille préventive et minutieuse d'un lieu visant à détecter et éliminer toute menace."
+            },
+            {
+                q: "Laquelle de ces propositions constitue un prérequis spécifique exact pour l'agent de gardiennage ?",
+                options: ["Rédiger de courts rapports précis et concis", "Rédiger des rapports d'enquêtes judiciaires détaillés", "Établir des procès-verbaux officiels de police", "Conduire des véhicules d'intervention prioritaire de police"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Parmi les prérequis spécifiques figurent notamment la rédaction de courts rapports précis et concis, l'écoute active et la conduite d'un véhicule."
+            },
+            {
+                q: "Quel impact psychologique ou contrainte professionnelle est explicitement mentionné dans le cours ?",
+                options: ["Le port obligatoire d'un insigne doré de service public", "Le port d'une carte d'identification avec photo", "L'obligation d'armer en permanence son véhicule de fonction", "Le port d'un uniforme standardisé inter-entreprises"],
+                answer: 1,
+                level: "🟡 Moyen",
+                explanation: "Le cours liste parmi les impacts psychologiques le port d'une tenue, d'un gilet pare-balles, d'une carte d'identification avec photo, d'une arme, d'un chien et le contrôle limité des bagages."
+            },
+            {
+                q: "Parmi les risques professionnels, quelle réaction physiologique ou tension nerveuse est listée ?",
+                options: ["Euforie et excitation chronique", "Insomnie ou somnolence", "Hypermnésie instantanée", "Relaxation musculaire permanente"],
+                answer: 1,
+                level: "🟡 Moyen",
+                explanation: "Le cours mentionne explicitement la tension nerveuse ou réaction physiologique : stress, insomnie, somnolence, énervement."
+            },
+            {
+                q: "Lequel de ces outils de travail spécialisés est explicitement listé dans le cours (Page 4) ?",
+                options: ["Appareils de comptage, de tri ou de pesage d'argent", "Détecteurs de métaux portatifs de fouille corporelle", "Analyseurs biométriques d'empreintes digitales", "Terminaux de lecture de cartes d'identité électroniques"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le cours liste spécifiquement les systèmes d'alarme, véhicules blindés, appareils de comptage, de tri ou de pesage d'argent, centrales électroniques, etc."
+            },
+            {
+                q: "Quelle attitude fait partie du profil psychologique idéal de l'agent de gardiennage ?",
+                options: ["Savoir imposer sa suprématie physique en cas de doute", "Savoir résister au sentiment de pouvoir conféré par l'uniforme", "Rechercher activement les conflits pour tester ses limites", "Agir de manière totalement indépendante de sa hiérarchie"],
+                answer: 1,
+                level: "🔴 Difficile",
+                explanation: "L'agent doit savoir résister au sentiment de pouvoir qui pourrait survenir par le port d'une tenue, d'une carte, d'une arme ou d'un chien."
+            },
+            {
+                q: "Que doit savoir faire l'agent en matière d'habileté sociale selon le profil psychologique ?",
+                options: ["Maintenir une distance hautaine avec le public", "Savoir calmer les personnes en état de panique ou d'hystérie", "Négocier des accords contractuels complexes", "Imposer le silence absolu par la contrainte verbale"],
+                answer: 1,
+                level: "🟡 Moyen",
+                explanation: "L'habileté sociale inclut de savoir s'exprimer facilement oralement, traiter avec la diversité et calmer les gens en état de panique ou d'hystérie."
+            },
+            {
+                q: "Que recouvre précisément la notion de 'gardiennage' selon le document officiel ?",
+                options: ["Toute forme de surveillance et de protection de biens et de personnes", "Exclusivement la garde armée de sites industriels sensibles", "La protection rapprochée des personnalités politiques", "La surveillance électronique exclusive de bâtiments publics"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le gardiennage concerne toute forme de surveillance et de protection de biens et de personnes."
+            },
+            {
+                q: "Quel domaine d'activité correspond exactement au numéro 3 dans la liste officielle ?",
+                options: ["La gestion de centraux d'alarme", "La surveillance et la protection de transport de valeurs", "La surveillance et le contrôle de personnes en milieu de sortie", "La protection rapprochée de personnes"],
+                answer: 1,
+                level: "🟡 Moyen",
+                explanation: "Le domaine n°3 est 'La surveillance et la protection de transport de valeurs'."
+            },
+            {
+                q: "Le contexte général de travail indique que les déplacements de l'agent peuvent s'effectuer :",
+                options: ["Exclusivement à l'intérieur de la région administrative de travail", "À l'intérieur du pays ou à l'étranger", "Uniquement dans le périmètre de l'entreprise cliente", "Dans les zones transfrontalières européennes uniquement"],
+                answer: 1,
+                level: "🔴 Difficile",
+                explanation: "Le cours précise un déplacement à l'intérieur du pays ou à l'étranger."
+            },
+            {
+                q: "Quel outil technique de sécurité est mentionné parmi les outils de travail à la page 4 ?",
+                options: ["Système de neutralisation", "Système de brouillage radar mobile", "Système de reconnaissance faciale automatisé", "Système de géolocalisation satellitaire individuel"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le cours liste le système informatique, le système de neutralisation, le système de contrôle d'accès et la télésurveillance."
+            },
+            {
+                q: "Face à la solitude inhérente à certains postes, que doit posséder l'agent selon son profil psychologique ?",
+                options: ["Savoir résister à la solitude et garder une attention soutenue", "Demander une rotation toutes les heures obligatoires", "Travailler exclusivement en binôme permanent", "Refuser systématiquement les postes isolés"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le profil psychologique idéal exige de garder une attention soutenue et de savoir résister à la solitude."
+            },
+            {
+                q: "Parmi les 4 formes d'organisation du gardiennage, laquelle concerne les services propres d'une entreprise ?",
+                options: ["Le service interne de gardiennage", "L'entreprise de gardiennage externe", "Le service de conciergerie privée", "La sous-traitance intégrée"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le service interne de gardiennage est l'une des 4 formes organisationnelles reconnues."
+            },
+            {
+                q: "Le domaine d'activité n°1 du secteur du gardiennage correspond à :",
+                options: ["Le gardiennage statique de biens mobiliers ou immobiliers", "Le gardiennage mobile et patrouille", "La surveillance des centres commerciaux", "Le contrôle d'accès aux entreprises"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le point 1 traite de la surveillance et protection de biens mobiliers ou immobiliers en gardiennage statique."
+            },
+            {
+                q: "Que comprend précisément le gardiennage mobile selon le point 2 du cours ?",
+                options: ["La patrouille et l'intervention après alarme", "La ronde de nuit pédestre en site isolé", "La surveillance par caméras mobiles embarquées", "Le contrôle routier des véhicules d'entreprise"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le gardiennage mobile comprend la patrouille et l'intervention après alarme."
+            },
+            {
+                q: "L'activité de réalisation de constatations d'infractions par l'agent se rapporte à quoi ?",
+                options: ["À la situation immédiatement perceptible de biens sur le domaine public", "Aux infractions commises par les usagers à l'intérieur des propriétés", "Aux délits constatés lors des rondes de nuit professionnelles", "Aux infractions au code de la route sur les autoroutes"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Il s'agit des constatations se rapportant exclusivement à la situation immédiatement perceptible de biens sur le domaine public."
+            },
+            {
+                q: "Quel est l'environnement de travail de l'agent de gardiennage décrit à la page 3 ?",
+                options: ["Diversifié (extérieur avec conditions climatiques, individuel ou en équipe, public présent ou non)", "Uniquement en milieu fermé et protégé des intempéries", "Strictement confiné dans des postes de contrôle centraux", "Exclusivement en extérieur de nuit sans contact avec le public"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "L'environnement de travail est diversifié, en extérieur ou intérieur, individuel ou en équipe, avec ou sans public."
+            },
+            {
+                q: "Concernant les horaires de travail de l'agent, le cours indique qu'ils sont :",
+                options: ["De jour ou de nuit, variables avec ou sans coupure", "Fixes par roulement cyclique de 8 heures continues", "Flexibles selon le choix exclusif de l'agent", "Limités strictement aux heures de fermeture des clients"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le cours indique un horaire de jour ou de nuit, variable avec ou sans coupure."
+            },
+            {
+                q: "Parmi les prérequis physiques de la page 3, l'agent doit être capable d'assurer :",
+                options: ["La station debout ou assise de longue durée", "Des efforts physiques intenses continus sans pause", "Des marches d'endurance de 20 kilomètres par jour", "Le port permanent de charges lourdes de plus de 30 kg"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "La station debout ou assise de longue durée est un prérequis physique explicite."
+            },
+            {
+                q: "Travailler sur quel support spécifique fait partie des prérequis de la page 3 ?",
+                options: ["Sur un écran pendant de longues périodes", "Sur des rapports manuscrits exclusivement", "Sur des plans topographiques géants", "Sur des interfaces holographiques de contrôle"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le cours mentionne explicitement le travail sur un écran pendant de longues périodes."
+            },
+            {
+                q: "L'impact psychologique lié au matériel professionnel inclut le port éventuel de :",
+                options: ["D'une arme et d'un chien de défense", "D'un équipement de protection anti-émeute complet", "D'un gilet de balisage fluorescent haute visibilité", "D'un système de communication crypté militaire"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "L'impact psychologique mentionne le port d'une arme, d'un chien, d'une tenue ou d'un gilet pare-balles."
+            },
+            {
+                q: "Le contrôle d'inspection exercé par l'agent sur les personnes est strictement limité à quoi ?",
+                options: ["Aux vêtements et aux bagages à main", "À une palpation de sécurité corporelle intégrale", "À l'inspection des effets personnels dans les coffres de véhicules", "À la vérification des objets métalliques par portique"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le cours précise la compétence limitée du contrôle des vêtements et des bagages à main."
+            },
+            {
+                q: "Quel risque de santé psychologique ou physiologique lié au stress est explicitement mentionné ?",
+                options: ["Énervement, insomnie ou somnolence", "Une fatigue auditive chronique irréversible", "Des troubles de la vision diurne", "Une perte totale de concentration réflexe"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Les tensions nerveuses ou réactions physiologiques incluent stress, insomnie, somnolence, énervement."
+            },
+            {
+                q: "Quel type de véhicule spécialisé est listé dans les outils de travail professionnels ?",
+                options: ["Véhicules blindés ou véhicules de transports", "Véhicules légers banalisés de filature", "Véhicules tout-terrain d'intervention rapide", "Véhicules utilitaires légers de patrouille discrète"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le cours liste les véhicules blindés ou les véhicules de transports."
+            },
+            {
+                q: "Que permettent de réaliser les appareils spécifiques mentionnés à la page 4 ?",
+                options: ["Compter, trier ou peser de l'argent", "Détecter la fausseté des documents d'identité", "Analyser la pureté des métaux précieux transportés", "Vérifier le contenu chimique des colis suspects"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Il s'agit des appareils de comptage, de tri ou de pesage d'argent."
+            },
+            {
+                q: "Comment l'agent doit-il se comporter vis-à-vis d'autrui selon son profil psychologique ?",
+                options: ["Respecter son prochain, ne pas être raciste et maîtriser ses réactions", "Observer une neutralité absolue sans un mot", "Imposer le respect par une attitude stricte et distante", "Appliquer les consignes sans se soucier du contact humain"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le profil exige de respecter son prochain, ne pas être raciste, ne pas être violent et maîtriser ses réactions."
+            },
+            {
+                q: "Comment l'agent doit-il réagir psychologiquement face au sentiment de pouvoir inhérent à sa fonction ?",
+                options: ["Savoir y résister (tenue, carte, arme, chien)", "L'utiliser pour assoir son autorité naturelle", "Le canaliser uniquement lors des interventions graves", "L'ignorer car il est sans effet réel sur la personnalité"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "L'agent doit savoir résister au sentiment de pouvoir conféré par les symboles de sa fonction."
+            },
+            {
+                q: "Quelle aptitude mentale spatiale est requise pour l'analyse des sites à surveiller ?",
+                options: ["Sens de l'orientation et structure mentale des lieux", "Capacité à mémoriser des plans numériques complexes", "Aptitude à dessiner des cartes topographiques", "Connaissance approfondie de l'urbanisme local"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le cours cite le sens de l'orientation et la structure mentale des lieux."
+            },
+            {
+                q: "Comment doivent être formulés et rédigés les rapports professionnels de l'agent ?",
+                options: ["Clairs, concis, exacts", "Détaillés, narratifs et exhaustifs", "Standardisés selon un modèle juridique strict", "Synthétiques et orientés vers la hiérarchie"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "L'agent doit rédiger des rapports clairs, concis, exacts et prendre des décisions autonomes."
+            },
+            {
+                q: "Quel est le lien fondamental décrit entre la sécurité privée et les services de police ?",
+                options: ["Externalisation de tâches et développement de synergies", "Subordination complète de la sécurité privée à la police", "Concurrence directe dans toutes les missions de sécurité", "Absence de tout partenariat opérationnel officiel"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le texte introductif parle d'externalisation de tâches et de synergies entre les acteurs de la sécurité."
+            },
+            {
+                q: "Le domaine d'activité n°11 du secteur du gardiennage concerne précisément :",
+                options: ["Accompagnement de groupes de personnes en vue de la sécurité routière", "La sécurisation des cortèges officiels et politiques", "Le guidage des convois exceptionnels industriels", "La régulation de la circulation sur les grands chantiers"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le point 11 est l'accompagnement de groupes de personnes en vue de la sécurité routière."
+            },
+            {
+                q: "Le domaine d'activité n°12 du secteur du gardiennage correspond à :",
+                options: ["Commande de moyens de sécurité techniques (drones)", "La maintenance des systèmes de télésurveillance", "L'installation de réseaux de communication hertziens", "Le pilotage de systèmes de défense automatisés"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le point 12 correspond à la commande de moyens de sécurité techniques (drones)."
+            },
+            {
+                q: "Parmi les risques professionnels majeurs et graves encourus figurent :",
+                options: ["Décès ou blessures graves suite à accident, incendie ou explosion", "L'agression physique préméditée avec armes à feu", "L'exposition à des substances chimiques hautement toxiques", "L'effondrement structurel de bâtiments sous surveillance"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le cours liste les risques de décès ou blessures graves suite à un accident, incendie, explosion ou accident de circulation."
+            },
+            {
+                q: "Quel animal de travail est mentionné comme outil et source potentielle de contrainte ?",
+                options: ["Le chien", "Le cheval de patrouille urbaine", "Le chien de pistage spécialisé", "L'animal d'alerte olfactive"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le chien est explicitement mentionné comme outil et contrainte psychologique."
+            },
+            {
+                q: "Que doit impérativement maîtriser l'agent s'il est amené à patrouiller avec un animal de travail ?",
+                options: ["Savoir le maîtriser et ne pas en avoir peur", "Connaître les techniques de dressage canin d'attaque", "Savoir le soigner en cas de blessure en service", "Assurer son transport exclusif dans un véhicule adapté"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Le profil psychologique exige de ne pas avoir peur des chiens/armes, de savoir patrouiller avec et de le maîtriser."
+            },
+            {
+                q: "Comment l'agent doit-il gérer son comportement face à une situation de crise aiguë ?",
+                options: ["Conserver son calme et ne pas céder à la panique", "Appliquer immédiatement les consignes de repli tactique", "Isoler les fauteurs de troubles par la force", "Donner l'alerte générale sans intervenir"],
+                answer: 0,
+                level: "🟡 Moyen",
+                explanation: "Il doit conserver son calme en situation de crise et savoir calmer panique ou hystérie."
+            },
+            {
+                q: "Quelle est la définition exacte du sweeping en tant que 9e domaine d'activité ?",
+                options: ["Une fouille préventive et minutieuse visant à détecter et éliminer toute menace physique ou électronique", "Un nettoyage technique approfondi des zones sensibles", "Une inspection visuelle rapide des issues de secours", "Un balayage électronique des fréquences radio ennemies"],
+                answer: 0,
+                level: "🔴 Difficile",
+                explanation: "Le sweeping est une fouille préventive et minutieuse d'un lieu visant à détecter et éliminer toute menace physique ou électronique."
+            }
         ];
 
-        let questions = [];
-        let currentIndex = 0;
-        let userAnswers = {};
-
-        function shuffleArray(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
+        /* ==========================================================================
+           4. BANQUE DE TEXTES À TROUS
+           ========================================================================== */
+        const FIB_BANK = [
+            {
+                sentence: "La loi du ___ octobre 2017 réglementant la sécurité privée et particulière a élargi le champ de compétences.",
+                answers: ["2"],
+                hints: [["deux", "chiffre"], ["premier chiffre du mois d'octobre"], ["C'est le chiffre 2"]]
+            },
+            {
+                sentence: "Le secteur du gardiennage se subdivise en ___ domaines d'activités.",
+                answers: ["13"],
+                hints: [["quantité", "nombre total"], ["entre 10 et 14"], ["Commence par 1, se termine par 3"]]
+            },
+            {
+                sentence: "Le secteur est organisé sous ___ formes principales.",
+                answers: ["4", "quatre"],
+                hints: [["nombre d'entreprises/formes"], ["entre 3 et 5"], ["C'est le chiffre 4"]]
+            },
+            {
+                sentence: "Le 9e domaine d'activité mentionné dans le cours est le ___ (fouille préventive et minutieuse).",
+                answers: ["Sweeping", "sweeping"],
+                hints: [["ratissage", "fouille"], ["terme anglais débutant par S"], ["S w e e p i n g"]]
+            },
+            {
+                sentence: "Parmi les prérequis, l'agent doit assurer et gérer les contacts __________.",
+                answers: ["téléphoniques"],
+                hints: [["relatif au téléphone"], ["appels vocaux"], ["Commence par t..."]]
+            },
+            {
+                sentence: "L'agent doit faire preuve d'une __________ active des personnes et fournir des renseignements.",
+                answers: ["écoute"],
+                hints: [["attention auditive"], ["prêter l'oreille"], ["Commence par é..."]]
+            },
+            {
+                sentence: "Parmi les risques professionnels, l'agent s'expose à un traumatisme psychologique suite à un __________ avec séquelles.",
+                answers: ["incident"],
+                hints: [["événement fâcheux"], ["accident"], ["Commence par i..."]]
+            },
+            {
+                sentence: "L'agent doit savoir observer et constater rapidement des éléments visuels et __________.",
+                answers: ["auditifs"],
+                hints: [["relatif au son"], ["écoute"], ["Commence par a..."]]
+            },
+            {
+                sentence: "L'agent doit savoir s'organiser dans l'espace : avoir le sens de l'orientation et une structure __________ des lieux.",
+                answers: ["mentale"],
+                hints: [["dans l'esprit"], ["psychologique"], ["Commence par m..."]]
+            },
+            {
+                sentence: "Le port d'une carte d'__________ avec photo fait partie de l'impact psychologique.",
+                answers: ["identification"],
+                hints: [["badge officiel"], ["carte d'identité professionnelle"], ["Commence par i..."]]
+            },
+            {
+                sentence: "L'externalisation de tâches des services de __________ appelle à des synergies.",
+                answers: ["police"],
+                hints: [["forces de l'ordre"], ["sécurité publique"], ["Commence par p..."]]
+            },
+            {
+                sentence: "Le domaine d'activité n°3 correspond au transport de __________.",
+                answers: ["valeurs"],
+                hints: [["fonds, argent, biens précieux"], ["transport sécurisé"], ["Commence par v..."]]
+            },
+            {
+                sentence: "L'agent peut travailler selon un horaire de jour ou de nuit, variable avec ou sans __________.",
+                answers: ["coupure"],
+                hints: [["interruption de service"], ["pause fractionnée"], ["Commence par c..."]]
+            },
+            {
+                sentence: "L'agent peut être amené à travailler en extérieur peu importe les conditions __________.",
+                answers: ["climatiques", "meteo", "météorologiques"],
+                hints: [["temps qu'il fait", "pluie, soleil, vent"], ["Commence par c..."]]
+            },
+            {
+                sentence: "L'agent doit savoir résister au sentiment de __________ (tenue, carte, arme, chien).",
+                answers: ["pouvoir"],
+                hints: [["autorité excessive"], ["sentiment de supériorité"], ["Commence par p..."]]
+            },
+            {
+                sentence: "L'agent doit conserver son __________ en situation de crise et calmer l'hystérie.",
+                answers: ["calme"],
+                hints: [["sang-froid"], ["sérénité"], ["Commence par c..."]]
+            },
+            {
+                sentence: "Le domaine d'activité n°12 concerne la commande de moyens de sécurité techniques tels que les __________.",
+                answers: ["drones"],
+                hints: [["engins volants radiocommandés"], ["technologie aérienne"], ["Commence par d..."]]
+            },
+            {
+                sentence: "Le gardiennage mobile comprend la patrouille et l'intervention après __________.",
+                answers: ["alarme"],
+                hints: [["système de détection sonore/visuel"], ["signal d'alerte"], ["Commence par a..."]]
+            },
+            {
+                sentence: "L'agent doit pouvoir rédiger des rapports clairs, concis, exacts et prendre des décisions de manière __________.",
+                answers: ["autonome"],
+                hints: [["par soi-même"], ["indépendante"], ["Commence par a..."]]
+            },
+            {
+                sentence: "Le domaine d'activité n°6 correspond à la mission d'inspecteur-__________.",
+                answers: ["magasin"],
+                hints: [["grande surface", "commerce de détail"], ["inspecteur en surface de vente"], ["Commence par m..."]]
             }
-            return arr;
+        ];
+
+        /* ==========================================================================
+           5. APPLICATION LOGIC & STATE MANAGEMENT
+           ================================================================---------- */
+        class AppState {
+            constructor() {
+                this.score = parseInt(localStorage.getItem('gp_score') || '0');
+                this.streak = parseInt(localStorage.getItem('gp_streak') || '0');
+                this.errors = JSON.parse(localStorage.getItem('gp_errors') || '[]');
+                this.updateGlobalHeader();
+            }
+            addScore(pts) {
+                this.score += pts;
+                this.streak += 1;
+                this.save();
+            }
+            resetStreak() {
+                this.streak = 0;
+                this.save();
+            }
+            addError(errObj) {
+                if (!this.errors.some(e => e.q === errObj.q)) {
+                    this.errors.push(errObj);
+                    this.save();
+                }
+            }
+            save() {
+                localStorage.setItem('gp_score', this.score);
+                localStorage.setItem('gp_streak', this.streak);
+                localStorage.setItem('gp_errors', JSON.stringify(this.errors));
+                this.updateGlobalHeader();
+            }
+            resetAll() {
+                this.score = 0;
+                this.streak = 0;
+                this.errors = [];
+                localStorage.removeItem('gp_score');
+                localStorage.removeItem('gp_streak');
+                localStorage.removeItem('gp_errors');
+                this.updateGlobalHeader();
+            }
+            updateGlobalHeader() {
+                document.getElementById('global-score').textContent = this.score;
+                document.getElementById('global-streak').textContent = this.streak;
+                const errBadge = document.getElementById('error-count-badge');
+                if (errBadge) errBadge.textContent = this.errors.length;
+            }
         }
 
-        function resetQuiz() {
-            const shuffledQ = shuffleArray(rawQuestions);
-            
-            questions = shuffledQ.map(qObj => {
-                const optionsWithOrigIndex = qObj.options.map((opt, idx) => ({
-                    text: opt,
-                    isCorrect: idx === qObj.correct
-                }));
-                const shuffledOpts = shuffleArray(optionsWithOrigIndex);
-                const newCorrectIndex = shuffledOpts.findIndex(o => o.isCorrect);
+        const state = new AppState();
 
-                return {
-                    q: qObj.q,
-                    hint: qObj.hint,
-                    options: shuffledOpts.map(o => o.text),
-                    correct: newCorrectIndex,
-                    explanation: qObj.explanation
-                };
-            });
+        class AppController {
+            constructor() {
+                this.currentView = 'home';
+                this.activeQuiz = [];
+                this.quizIndex = 0;
+                this.quizMode = 'qcm';
+                this.fibList = [];
+                this.fibIndex = 0;
+                this.fibHelpLevel = 0;
+            }
 
-            currentIndex = 0;
-            userAnswers = {};
+            showView(viewName) {
+                sound.click();
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById(`view-${viewName}`).classList.add('active');
+                this.currentView = viewName;
+                window.scrollTo(0, 0);
+            }
 
-            document.getElementById('quiz-box').classList.remove('hidden');
-            document.getElementById('result-box').classList.add('hidden');
-            updateHeader();
-            renderQuestion();
-        }
+            openSettings() {
+                sound.click();
+                document.getElementById('settings-modal').classList.add('open');
+            }
 
-        function updateHeader() {
-            document.getElementById('progress-text').innerText = `Question ${currentIndex + 1} / ${questions.length}`;
-            const answeredCount = Object.keys(userAnswers).length;
-            let score = 0;
-            Object.keys(userAnswers).forEach(idx => {
-                if (userAnswers[idx] === questions[idx].correct) score++;
-            });
-            document.getElementById('score-text').innerText = score;
-            document.getElementById('answered-text').innerText = answeredCount;
+            closeSettings() {
+                sound.click();
+                document.getElementById('settings-modal').classList.remove('open');
+            }
 
-            const progressPct = ((currentIndex + 1) / questions.length) * 100;
-            document.getElementById('progress-bar').style.width = `${progressPct}%`;
-        }
+            toggleSound(el) {
+                sound.enabled = el.checked;
+                if (sound.enabled) sound.click();
+            }
 
-        function renderQuestion() {
-            const currentQ = questions[currentIndex];
-            document.getElementById('question-text').innerText = `${currentIndex + 1}. ${currentQ.q}`;
-            
-            // Reset hint box
-            document.getElementById('hint-box').classList.add('hidden');
-            document.getElementById('hint-text').innerText = currentQ.hint || "Pas d'indice particulier pour cette question.";
+            resetStats() {
+                if (confirm("Voulez-vous vraiment réinitialiser toutes vos statistiques et erreurs ?")) {
+                    state.resetAll();
+                    this.closeSettings();
+                    alert("Statistiques réinitialisées avec succès.");
+                    if (this.currentView === 'errors') this.startErrorsReview();
+                }
+            }
 
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
+            /* --- RÉVISION (FICHES) --- */
+            startRevision() {
+                this.showView('revision');
+                const container = document.getElementById('revision-content-container');
+                container.innerHTML = '';
+                COURS_DATA.fiches.forEach(fiche => {
+                    const card = document.createElement('div');
+                    card.className = 'theme-card';
+                    card.innerHTML = `
+                        <h3>📖 ${fiche.title}</h3>
+                        <div class="theme-content">${fiche.content}</div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
 
-            const hasAnswered = userAnswers.hasOwnProperty(currentIndex);
-            const selectedOpt = userAnswers[currentIndex];
+            /* --- QCM CONFIG & LANCEUR --- */
+            startQCMSetup() {
+                this.quizMode = 'qcm';
+                document.getElementById('setup-title').textContent = "Configuration du QCM";
+                document.getElementById('setup-desc').textContent = "Testez vos connaissances avec des distracteurs subtils.";
+                document.getElementById('setup-options-container').innerHTML = `
+                    <label style="font-weight: 600; text-align: left;">Nombre de questions :</label>
+                    <select id="setup-q-count" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 1rem;">
+                        <option value="10">10 questions</option>
+                        <option value="20">20 questions</option>
+                        <option value="40" selected>40 questions (Toutes)</option>
+                    </select>
+                `;
+                this.showView('setup');
+            }
 
-            currentQ.options.forEach((optText, optIndex) => {
-                const btn = document.createElement('button');
-                btn.className = `option-btn w-full text-left p-4 rounded-xl border text-sm md:text-base font-medium flex justify-between items-center shadow-sm transition-all `;
-                
-                if (!hasAnswered) {
-                    btn.className += `border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 text-slate-700`;
-                    btn.onclick = () => selectOption(optIndex);
-                } else {
-                    btn.disabled = true;
-                    if (optIndex === currentQ.correct) {
-                        btn.className += `border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold`;
-                    } else if (optIndex === selectedOpt) {
-                        btn.className += `border-rose-500 bg-rose-50 text-rose-900`;
+            startExamSetup() {
+                this.quizMode = 'exam';
+                document.getElementById('setup-title').textContent = "Simulation d'Examen";
+                document.getElementById('setup-desc').textContent = "Faites un test complet en conditions réelles. Les corrections s'afficheront à la fin.";
+                document.getElementById('setup-options-container').innerHTML = `
+                    <label style="font-weight: 600; text-align: left;">Format de l'examen :</label>
+                    <select id="setup-q-count" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 1rem;">
+                        <option value="10">10 questions</option>
+                        <option value="20" selected>20 questions</option>
+                        <option value="40">40 questions</option>
+                    </select>
+                `;
+                this.showView('setup');
+            }
+
+            confirmSetup() {
+                sound.click();
+                const count = parseInt(document.getElementById('setup-q-count').value);
+                let pool = [...QCM_BANK].sort(() => Math.random() - 0.5);
+                this.activeQuiz = pool.slice(0, count);
+                this.quizIndex = 0;
+                this.correctExamCount = 0;
+                this.showView('quiz');
+                this.loadQuizQuestion();
+            }
+
+            loadQuizQuestion() {
+                if (this.quizIndex >= this.activeQuiz.length) {
+                    if (this.quizMode === 'exam') {
+                        this.showExamResult();
                     } else {
-                        btn.className += `border-slate-200 bg-slate-50 text-slate-400 opacity-60`;
+                        alert("Félicitations, vous avez terminé cette session de QCM !");
+                        this.showView('home');
+                    }
+                    return;
+                }
+
+                const item = this.activeQuiz[this.quizIndex];
+                const total = this.activeQuiz.length;
+                
+                document.getElementById('quiz-progress-bar').style.width = `${((this.quizIndex) / total) * 100}%`;
+                document.getElementById('quiz-counter').textContent = `Question ${this.quizIndex + 1} / ${total}`;
+                document.getElementById('quiz-mode-label').textContent = this.quizMode === 'exam' ? "Mode Examen" : "Mode QCM";
+
+                document.getElementById('quiz-question-text').innerHTML = item.q;
+
+                let optsWithIndex = item.options.map((opt, idx) => ({ opt, originalIdx: idx }));
+                optsWithIndex.sort(() => Math.random() - 0.5);
+
+                const listEl = document.getElementById('quiz-options-list');
+                listEl.innerHTML = '';
+                document.getElementById('quiz-explanation').style.display = 'none';
+                document.getElementById('quiz-next-btn').style.display = 'none';
+
+                optsWithIndex.forEach((obj) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = obj.opt;
+                    btn.onclick = () => this.answerQuiz(obj.originalIdx, item.answer, btn, optsWithIndex, item);
+                    listEl.appendChild(btn);
+                });
+            }
+
+            answerQuiz(selectedIdx, correctIdx, btnEl, allOpts, item) {
+                const isCorrect = (selectedIdx === correctIdx);
+                const buttons = document.querySelectorAll('.option-btn');
+                buttons.forEach(b => b.disabled = true);
+
+                if (this.quizMode === 'exam') {
+                    if (isCorrect) {
+                        btnEl.classList.add('correct');
+                        this.correctExamCount++;
+                    } else {
+                        btnEl.classList.add('incorrect');
+                        state.addError({
+                            q: item.q,
+                            userAns: item.options[selectedIdx],
+                            correctAns: item.options[correctIdx],
+                            explanation: item.explanation
+                        });
+                    }
+                    buttons.forEach(b => {
+                        const matchedObj = allOpts.find(o => o.opt === b.textContent);
+                        if (matchedObj && matchedObj.originalIdx === correctIdx) {
+                            b.classList.add('correct');
+                        }
+                    });
+                    setTimeout(() => {
+                        this.quizIndex++;
+                        this.loadQuizQuestion();
+                    }, 1200);
+                    return;
+                }
+
+                const expBox = document.getElementById('quiz-explanation');
+                expBox.classList.add('show');
+                expBox.style.display = 'block';
+
+                if (isCorrect) {
+                    sound.success();
+                    btnEl.classList.add('correct');
+                    state.addScore(10);
+                    expBox.innerHTML = `<strong>✅ Correct !</strong><br>${item.explanation}`;
+                } else {
+                    sound.error();
+                    btnEl.classList.add('incorrect');
+                    state.resetStreak();
+                    state.addError({
+                        q: item.q,
+                        userAns: item.options[selectedIdx],
+                        correctAns: item.options[correctIdx],
+                        explanation: item.explanation
+                    });
+                    buttons.forEach(b => {
+                        const matchedObj = allOpts.find(o => o.opt === b.textContent);
+                        if (matchedObj && matchedObj.originalIdx === correctIdx) {
+                            b.classList.add('correct');
+                        }
+                    });
+                    expBox.innerHTML = `<strong>❌ Incorrect.</strong> La bonne réponse était : <em>${item.options[correctIdx]}</em>.<br><br>${item.explanation}`;
+                }
+
+                document.getElementById('quiz-next-btn').style.display = 'inline-flex';
+            }
+
+            nextQuizQuestion() {
+                sound.click();
+                this.quizIndex++;
+                this.loadQuizQuestion();
+            }
+
+            showExamResult() {
+                sound.complete();
+                this.showView('result');
+                const total = this.activeQuiz.length;
+                const scorePts = this.correctExamCount;
+                const percent = Math.round((scorePts / total) * 100);
+                document.getElementById('res-score').textContent = `${scorePts} / ${total}`;
+                document.getElementById('res-percent').textContent = `${percent} %`;
+            }
+
+            /* --- TEXTE À TROUS --- */
+            startFIB() {
+                this.fibList = [...FIB_BANK].sort(() => Math.random() - 0.5);
+                this.fibIndex = 0;
+                this.fibHelpLevel = 0;
+                this.showView('fib');
+                this.loadFIBQuestion();
+            }
+
+            loadFIBQuestion() {
+                if (this.fibIndex >= this.fibList.length) {
+                    sound.complete();
+                    alert("Félicitations, vous avez terminé l'exercice de Texte à trous !");
+                    this.showView('home');
+                    return;
+                }
+
+                const item = this.fibList[this.fibIndex];
+                this.fibHelpLevel = 0;
+                document.getElementById('fib-progress-bar').style.width = `${(this.fibIndex / this.fibList.length) * 100}%`;
+                document.getElementById('fib-counter').textContent = `Texte à trous ${this.fibIndex + 1} / ${this.fibList.length}`;
+                document.getElementById('fib-help-indicator').textContent = `💡 Aides utilisées : ${this.fibHelpLevel}`;
+                document.getElementById('fib-explanation').style.display = 'none';
+                document.getElementById('fib-next-btn').style.display = 'none';
+                document.getElementById('fib-validate-btn').style.display = 'inline-flex';
+                document.getElementById('fib-help-btn').style.display = 'inline-flex';
+                document.getElementById('fib-bubbles-container').classList.remove('show');
+                document.getElementById('fib-bubbles-container').innerHTML = '';
+
+                let sentenceHtml = item.sentence.replace('___', '<input type="text" class="fib-input" id="fib-user-input" autocomplete="off">');
+                document.getElementById('fib-sentence-container').innerHTML = sentenceHtml;
+            }
+
+            toggleFIBHelp() {
+                sound.click();
+                this.fibHelpLevel++;
+                document.getElementById('fib-help-indicator').textContent = `💡 Aides utilisées : ${this.fibHelpLevel}`;
+                const container = document.getElementById('fib-bubbles-container');
+                container.classList.add('show');
+                container.innerHTML = '';
+
+                const item = this.fibList[this.fibIndex];
+                const correctAns = item.answers[0];
+
+                let distractors = item.hints[Math.min(this.fibHelpLevel - 1, item.hints.length - 1)];
+                let choices = [correctAns, ...distractors].slice(0, 4).sort(() => Math.random() - 0.5);
+
+                choices.forEach(choice => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'help-bubble';
+                    bubble.textContent = choice;
+                    bubble.onclick = () => {
+                        sound.click();
+                        document.querySelectorAll('.help-bubble').forEach(b => b.classList.remove('selected'));
+                        bubble.classList.add('selected');
+                        const inputEl = document.getElementById('fib-user-input');
+                        if (inputEl) inputEl.value = choice;
+                    };
+                    container.appendChild(bubble);
+                });
+            }
+
+            validateFIB() {
+                const inputEl = document.getElementById('fib-user-input');
+                if (!inputEl) return;
+                const userVal = inputEl.value.trim();
+                const item = this.fibList[this.fibIndex];
+                
+                let isMatch = item.answers.some(ans => this.checkTolerance(userVal, ans));
+
+                const expBox = document.getElementById('fib-explanation');
+                expBox.style.display = 'block';
+                expBox.classList.add('show');
+
+                if (isMatch) {
+                    sound.success();
+                    inputEl.classList.add('correct-input');
+                    inputEl.disabled = true;
+                    state.addScore(15 - (this.fibHelpLevel * 3));
+                    expBox.innerHTML = `<strong>✅ Correct !</strong> Le mot attendu était bien <em>"${item.answers[0]}"</em>.`;
+                } else {
+                    sound.error();
+                    inputEl.classList.add('incorrect-input');
+                    state.resetStreak();
+                    state.addError({
+                        q: item.sentence,
+                        userAns: userVal || "(vide)",
+                        correctAns: item.answers[0],
+                        explanation: "Exercice de texte à trous - Pages 1 à 5."
+                    });
+                    expBox.innerHTML = `<strong>❌ Incorrect.</strong> La bonne réponse attendue était : <em>"${item.answers[0]}"</em>.`;
+                }
+
+                document.getElementById('fib-validate-btn').style.display = 'none';
+                document.getElementById('fib-help-btn').style.display = 'none';
+                document.getElementById('fib-next-btn').style.display = 'inline-flex';
+            }
+
+            checkTolerance(str1, str2) {
+                const s1 = str1.toLowerCase();
+                const s2 = str2.toLowerCase();
+                if (s1 === s2) return true;
+                if (Math.abs(s1.length - s2.length) > 1) return false;
+                let diffs = 0;
+                let i = 0, j = 0;
+                while (i < s1.length && j < s2.length) {
+                    if (s1[i] !== s2[j]) {
+                        diffs++;
+                        if (s1.length > s2.length) i++;
+                        else if (s1.length < s2.length) j++;
+                        else { i++; j++; }
+                    } else {
+                        i++; j++;
                     }
                 }
+                if (i < s1.length || j < s2.length) diffs++;
+                return diffs <= 1;
+            }
 
-                btn.innerHTML = `<span>${optText}</span>`;
-                optionsContainer.appendChild(btn);
-            });
+            nextFIBQuestion() {
+                sound.click();
+                this.fibIndex++;
+                this.loadFIBQuestion();
+            }
 
-            // Feedback box
-            const feedbackEl = document.getElementById('feedback');
-            if (hasAnswered) {
-                feedbackEl.classList.remove('hidden');
-                if (selectedOpt === currentQ.correct) {
-                    feedbackEl.className = "p-4 rounded-xl mb-6 text-sm md:text-base font-medium bg-emerald-100 text-emerald-800 border border-emerald-200";
-                    feedbackEl.innerHTML = `<strong>Correct !</strong> ${currentQ.explanation}`;
-                } else {
-                    feedbackEl.className = "p-4 rounded-xl mb-6 text-sm md:text-base font-medium bg-rose-100 text-rose-800 border border-rose-200";
-                    feedbackEl.innerHTML = `<strong>Incorrect.</strong> ${currentQ.explanation}`;
+            /* --- MES ERREURS --- */
+            startErrorsReview() {
+                this.showView('errors');
+                const container = document.getElementById('errors-list-container');
+                const redoBtn = document.getElementById('redo-errors-btn');
+                container.innerHTML = '';
+
+                if (state.errors.length === 0) {
+                    container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 2rem;">Aucune erreur enregistrée pour le moment. Bravo ! 🎉</p>`;
+                    redoBtn.style.display = 'none';
+                    return;
                 }
-            } else {
-                feedbackEl.classList.add('hidden');
+
+                redoBtn.style.display = 'inline-flex';
+                state.errors.forEach((err, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'error-item';
+                    div.innerHTML = `
+                        <h4>Question ${idx + 1} : ${err.q}</h4>
+                        <div class="error-details">
+                            <span>Votre réponse : <span class="user-ans-tag">${err.userAns}</span></span>
+                            <span>Bonne réponse : <span class="correct-ans-tag">${err.correctAns}</span></span>
+                            <p style="margin-top: 6px; color: var(--text-main);"><em>Explication :</em> ${err.explanation}</p>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
             }
 
-            // Buttons state
-            document.getElementById('prev-btn').disabled = currentIndex === 0;
-            const nextBtn = document.getElementById('next-btn');
-            nextBtn.disabled = !hasAnswered;
+            startRedoErrors() {
+                sound.click();
+                this.activeQuiz = state.errors.map(err => ({
+                    q: err.q,
+                    options: [err.correctAns, "Distracteur technique 1", "Distracteur technique 2", "Distracteur technique 3"].sort(() => Math.random() - 0.5),
+                    answer: 0,
+                    explanation: err.explanation
+                }));
+                this.activeQuiz.forEach(item => {
+                    item.answer = item.options.indexOf(state.errors.find(e => e.q === item.q).correctAns);
+                });
 
-            if (currentIndex === questions.length - 1) {
-                nextBtn.innerText = "Voir les résultats";
-            } else {
-                nextBtn.innerText = "Suivant";
-            }
-
-            updateHeader();
-        }
-
-        function toggleHint() {
-            const hintBox = document.getElementById('hint-box');
-            hintBox.classList.toggle('hidden');
-        }
-
-        function selectOption(optIndex) {
-            userAnswers[currentIndex] = optIndex;
-            renderQuestion();
-        }
-
-        function prevQuestion() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderQuestion();
-            }
-        }
-
-        function nextQuestion() {
-            if (currentIndex < questions.length - 1) {
-                currentIndex++;
-                renderQuestion();
-            } else {
-                showResults();
+                this.quizIndex = 0;
+                this.quizMode = 'qcm';
+                this.showView('quiz');
+                this.loadQuizQuestion();
             }
         }
 
-        function showResults() {
-            document.getElementById('quiz-box').classList.add('hidden');
-            document.getElementById('result-box').classList.remove('hidden');
-
-            let score = 0;
-            questions.forEach((q, idx) => {
-                if (userAnswers[idx] === q.correct) score++;
-            });
-
-            document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
-
-            const commentEl = document.getElementById('performance-comment');
-            const ratio = score / questions.length;
-            if (ratio === 1) {
-                commentEl.innerText = "Excellence absolue ! Vous maîtrisez parfaitement la législation, les prérequis et le cadre déontologique du gardiennage.";
-            } else if (ratio >= 0.8) {
-                commentEl.innerText = "Très bon travail ! Vos connaissances sur la sécurité privée et la loi de 2017 sont très solides.";
-            } else if (ratio >= 0.5) {
-                commentEl.innerText = "Résultat correct. Une révision des spécificités (activités 1 à 13 et règles liées aux portiers) vous permettra de vous perfectionner.";
-            } else {
-                commentEl.innerText = "Des révisions approfondies du document sont nécessaires pour bien assimiler le cadre réglementaire et les interdictions.";
-            }
-        }
-
-        // Start initial quiz
-        resetQuiz();
+        const app = new AppController();
     </script>
 </body>
 </html>
